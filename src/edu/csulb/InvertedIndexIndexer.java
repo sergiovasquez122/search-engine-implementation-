@@ -1,0 +1,54 @@
+package edu.csulb;
+
+import cecs429.documents.DirectoryCorpus;
+import cecs429.documents.Document;
+import cecs429.documents.DocumentCorpus;
+import cecs429.indexing.Index;
+import cecs429.indexing.InvertedIndex;
+import cecs429.indexing.Posting;
+import cecs429.text.BasicTokenProcessor;
+import cecs429.text.EnglishTokenStream;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Paths;
+
+public class InvertedIndexIndexer {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        // Create a DocumentCorpus to load .txt documents from the project directory.
+        DocumentCorpus corpus = DirectoryCorpus.loadJsonDirectory(Paths.get("").toAbsolutePath(), ".json");
+        // Index the documents of the corpus.
+        Index index = indexCorpus(corpus) ;
+
+        // We aren't ready to use a full query parser; for now, we'll only support single-term queries.
+        String query = "whale"; // hard-coded search for "whale"
+        for (Posting p : index.getPostings(query)) {
+            System.out.println("Document " + corpus.getDocument(p.getDocumentId()).getTitle());
+        }
+        InputStreamReader inp = new InputStreamReader(System.in);
+        BufferedReader br = new BufferedReader(inp);
+        String userInput;
+        do{
+            System.out.print("Enter query: ");
+            userInput = br.readLine();
+            for(Posting p : index.getPostings(userInput)){
+                System.out.println("Document " + corpus.getDocument(p.getDocumentId()).getTitle());
+            }
+            System.out.print("\n\n\n");
+        }while(!userInput.equals("quit"));
+    }
+
+    private static Index indexCorpus(DocumentCorpus corpus) {
+        BasicTokenProcessor processor = new BasicTokenProcessor();
+
+        InvertedIndex invertedIndex = new InvertedIndex();
+        for (Document d : corpus.getDocuments()) {
+            EnglishTokenStream englishTokenStream = new EnglishTokenStream(d.getContent());
+            for(String word : englishTokenStream.getTokens()){
+                invertedIndex.addTerm(processor.processToken(word), d.getId());
+            }
+        }
+        return invertedIndex;
+    }
+}
