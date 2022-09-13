@@ -4,7 +4,7 @@ import cecs429.documents.DirectoryCorpus;
 import cecs429.documents.Document;
 import cecs429.documents.DocumentCorpus;
 import cecs429.indexing.Index;
-import cecs429.indexing.InvertedIndex;
+import cecs429.indexing.PositionalInvertedIndex;
 import cecs429.indexing.Posting;
 import cecs429.text.BasicTokenProcessor;
 import cecs429.text.EnglishTokenStream;
@@ -42,11 +42,12 @@ public class InvertedIndexIndexer {
     private static Index indexCorpus(DocumentCorpus corpus) {
         BasicTokenProcessor processor = new BasicTokenProcessor();
 
-        InvertedIndex invertedIndex = new InvertedIndex();
+        PositionalInvertedIndex invertedIndex = new PositionalInvertedIndex();
         for (Document d : corpus.getDocuments()) {
             EnglishTokenStream englishTokenStream = new EnglishTokenStream(d.getContent());
+            int token = 1;
             for(String word : englishTokenStream.getTokens()){
-                invertedIndex.addTerm(processor.processToken(word), d.getId());
+                invertedIndex.addTerm(processor.processToken(word), d.getId(), token++);
             }
         }
         return invertedIndex;
