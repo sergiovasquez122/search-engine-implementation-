@@ -9,6 +9,11 @@ import java.util.List;
 public class Posting {
 	private int mDocumentId;
 	private List<Integer> mPos =new ArrayList<>();
+
+	public List<Integer> getPos() {
+		return mPos;
+	}
+
 	public void addPos(int pos){mPos.add(pos);}
 
 	public Posting(int documentId) {
