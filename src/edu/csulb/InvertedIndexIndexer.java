@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 public class InvertedIndexIndexer {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         // Create a DocumentCorpus to load .txt documents from the project directory.
-        DocumentCorpus corpus = DirectoryCorpus.loadJsonDirectory(Paths.get("").toAbsolutePath(), ".json");
+        DocumentCorpus corpus = findCorpus();
         // Index the documents of the corpus.
         Index index = indexCorpus(corpus);
 
