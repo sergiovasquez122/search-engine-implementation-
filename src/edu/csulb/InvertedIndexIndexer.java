@@ -20,12 +20,6 @@ public class InvertedIndexIndexer {
         DocumentCorpus corpus = findCorpus();
         // Index the documents of the corpus.
         Index index = indexCorpus(corpus);
-
-        // We aren't ready to use a full query parser; for now, we'll only support single-term queries.
-        String query = "whale"; // hard-coded search for "whale"
-        for (Posting p : index.getPostings(query)) {
-            System.out.println("Document " + corpus.getDocument(p.getDocumentId()).getTitle());
-        }
         InputStreamReader inp = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(inp);
         String userInput;
