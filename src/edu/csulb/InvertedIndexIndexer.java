@@ -41,7 +41,10 @@ public class InvertedIndexIndexer {
             EnglishTokenStream englishTokenStream = new EnglishTokenStream(d.getContent());
             int token = 1;
             for (String word : englishTokenStream.getTokens()) {
-                invertedIndex.addTerm(processor.processToken(word), d.getId(), token++);
+                for (String processedWord : processor.processToken(word)) {
+                    invertedIndex.addTerm(processedWord, d.getId(), token);
+                }
+                token++;
             }
         }
         return invertedIndex;
