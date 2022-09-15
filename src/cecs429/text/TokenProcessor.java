@@ -9,5 +9,5 @@ public interface TokenProcessor {
 	/**
 	 * Normalizes a token into a term.
 	 */
-	List<String> processToken(String token);
+	List<String> processToken(String token) throws ClassNotFoundException, InstantiationException, IllegalAccessException;
 }
