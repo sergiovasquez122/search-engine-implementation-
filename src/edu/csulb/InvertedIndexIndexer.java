@@ -102,7 +102,6 @@ public class InvertedIndexIndexer {
         do {
             System.out.print("Enter path: ");
             userInput = br.readLine();
-            System.out.print("\n\n\n");
         } while (!isValidPath(userInput));
        DirectoryCorpus directoryCorpus = new DirectoryCorpus(Path.of(userInput));
        directoryCorpus.registerFileDocumentFactory(".json", JsonFileDocument::loadJsonFileDocument);
