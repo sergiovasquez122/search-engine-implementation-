@@ -10,7 +10,7 @@ public class ComplexTokenProcessor implements TokenProcessor {
     @Override
     public List<String> processToken(String token) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         List<String> result = new ArrayList<>();
-        token = token.replaceAll("(^[\\W_])|([\\W_]*$)","");
+        token = token.replaceAll("^[\\W_]|[\\W_]$","");
         token = token.replaceAll("\"'","");
         if (token.contains("-")){
                String[] tokens = token.toLowerCase().split("-");

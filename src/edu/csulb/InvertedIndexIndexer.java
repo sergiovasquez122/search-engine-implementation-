@@ -66,7 +66,7 @@ public class InvertedIndexIndexer {
         if (strings[0].equals(":index")){
             corpus = IndexFromFile(strings[1]);
             index = indexCorpus(corpus);
-        }else if (strings[0].equals(":term")){
+        }else if (strings[0].equals(":stem")){
             System.out.println(Stem(strings[1]));
         }
     }
