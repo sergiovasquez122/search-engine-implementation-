@@ -1,6 +1,8 @@
 package cecs429.queries;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.stream.Collectors;
 
 import cecs429.indexing.Index;
@@ -19,12 +21,37 @@ public class AndQuery implements QueryComponent {
 	@Override
 	public List<Posting> getPostings(Index index) {
 		List<Posting> result = null;
-		
-		// TODO: program the merge for an AndQuery, by gathering the postings of the composed QueryComponents and
-		// intersecting the resulting postings.
-		
+		int idx = 0;
+		result = mComponents.get(idx++).getPostings(index);
+		while (idx< mComponents.size() && (!result.isEmpty()))
+		{
+			result = intersect(result,mComponents.get(idx++).getPostings(index));
+		}
 		return result;
 	}
+
+	private static List<Posting> intersect (List<Posting> l1, List<Posting> l2){
+		List<Posting> result = new ArrayList<>();
+		int l1_idx =0;
+		int l2_idx =0;
+		while (l1_idx<l1.size()&&l2_idx<l2.size()){
+			Posting p1=l1.get(l1_idx);
+			Posting p2=l2.get(l2_idx);
+			if (p1.getDocumentId()== p2.getDocumentId()){
+				result.add(p1);
+				l1_idx++;
+				l2_idx++;
+			} else if (p1.getDocumentId()< p2.getDocumentId()){
+
+				l1_idx++;
+			}else {
+				l2_idx++;
+			}
+		}
+		return result;
+	}
+
+
 	
 	@Override
 	public String toString() {

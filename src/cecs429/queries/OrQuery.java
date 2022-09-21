@@ -1,5 +1,6 @@
 package cecs429.queries;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,16 +18,39 @@ public class OrQuery implements QueryComponent {
 		mComponents = components;
 	}
 	
-	@Override
-	public List<Posting> getPostings(Index index) {
-		List<Posting> result = null;
-		
-		// TODO: program the merge for an OrQuery, by gathering the postings of the composed QueryComponents and
-		// unioning the resulting postings.
-		
+		public List<Posting> getPostings(Index index) {
+			List<Posting> result = null;
+			int idx = 0;
+			result = mComponents.get(idx++).getPostings(index);
+			while (idx< mComponents.size() )
+			{
+				result = intersect(result,mComponents.get(idx++).getPostings(index));
+			}
+			return result;
+		}
+	private static List<Posting> intersect (List<Posting> l1, List<Posting> l2){
+		List<Posting> result = new ArrayList<>();
+		int l1_idx =0;
+		int l2_idx =0;
+		while (l1_idx<l1.size()&&l2_idx<l2.size()){
+			Posting p1=l1.get(l1_idx);
+			Posting p2=l2.get(l2_idx);
+			if (p1.getDocumentId()== p2.getDocumentId()){
+				result.add(p1);
+				l1_idx++;
+				l2_idx++;
+			} else if (p1.getDocumentId()< p2.getDocumentId()){
+
+				l1_idx++;
+			}else {
+				l2_idx++;
+			}
+		}
+		while (l1_idx<l1.size())result.add(l1.get(l1_idx++));
+		while (l2_idx<l2.size())result.add(l2.get(l2_idx++));
 		return result;
 	}
-	
+
 	@Override
 	public String toString() {
 		// Returns a string of the form "[SUBQUERY] + [SUBQUERY] + [SUBQUERY]"
