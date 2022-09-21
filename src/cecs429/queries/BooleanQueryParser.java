@@ -147,7 +147,14 @@ public class BooleanQueryParser {
 		while (subquery.charAt(startIndex) == ' ') {
 			++startIndex;
 		}
-		
+
+		if (subquery.charAt(startIndex) == '"'){
+			++startIndex;
+			int nextQuote = subquery.indexOf('"',startIndex);
+			lengthOut = nextQuote - startIndex;
+			return new Literal(new StringBounds(startIndex,lengthOut),
+					new PhraseLiteral(subquery.substring(startIndex, startIndex + lengthOut)));
+		}
 		// Locate the next space to find the end of this literal.
 		int nextSpace = subquery.indexOf(' ', startIndex);
 		if (nextSpace < 0) {
@@ -163,11 +170,5 @@ public class BooleanQueryParser {
 		 new StringBounds(startIndex, lengthOut),
 		 new TermLiteral(subquery.substring(startIndex, startIndex + lengthOut)));
 		
-		/*
-		TODO:
-		Instead of assuming that we only have single-term literals, modify this method so it will create a PhraseLiteral
-		object if the first non-space character you find is a double-quote ("). In this case, the literal is not ended
-		by the next space character, but by the next double-quote character.
-		 */
 	}
 }
