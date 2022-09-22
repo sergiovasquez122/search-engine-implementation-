@@ -19,7 +19,7 @@ public class AndQuery implements QueryComponent {
 	}
 	
 	@Override
-	public List<Posting> getPostings(Index index) {
+	public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		List<Posting> result = null;
 		int idx = 0;
 		result = mComponents.get(idx++).getPostings(index);

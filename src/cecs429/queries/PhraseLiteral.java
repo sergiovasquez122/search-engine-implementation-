@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import cecs429.indexing.Index;
 import cecs429.indexing.Posting;
+import cecs429.text.ComplexTokenProcessor;
 
 /**
  * Represents a phrase literal consisting of one or more terms that must occur in sequence.
@@ -30,11 +31,14 @@ public class PhraseLiteral implements QueryComponent {
 	}
 	
 	@Override
-	public List<Posting> getPostings(Index index) {
+	public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		List<Posting> result = null;
+		ComplexTokenProcessor processor = new ComplexTokenProcessor();
 		for (int k=1;k<= mTerms.size()-1;k++){
-			List<Posting> p1 = index.getPostings(mTerms.get(k-1));
-			List<Posting> p2 = index.getPostings(mTerms.get(k));
+			List<String> s1=processor.processToken(mTerms.get(k-1));
+			List<String> s2=processor.processToken(mTerms.get(k));
+			List<Posting> p1 = index.getPostings(s1.get(s1.size()-1));
+			List<Posting> p2 = index.getPostings(s2.get(s2.size()-1));
 			result=PositionalIntersect(p1,p2,k);
 		}
 		return result;
