@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 public class InvertedIndexIndexer {
@@ -24,7 +26,11 @@ public class InvertedIndexIndexer {
         // Create a DocumentCorpus to load .txt documents from the project directory.
          DirectoryCorpus corpus = findCorpus();
         // Index the documents of the corpus.
+        Instant start = Instant.now();
         Index index = indexCorpus(corpus);
+        Instant end = Instant.now();
+        Duration timeElapsed = Duration.between(start, end);
+        System.out.println("Time taken: "+ timeElapsed.toSeconds() +" seconds");
         InputStreamReader inp = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(inp);
         String userInput;
@@ -44,17 +50,27 @@ public class InvertedIndexIndexer {
                     Posting p = postings.get(i);
                     System.out.println("Document " + i + ": "+ corpus.getDocument(p.getDocumentId()).getTitle());
                 }
-                System.out.println(component.getPostings(index).size());
-                System.out.print("Enter docid to view or -1 to skip: ");
-                userInput = br.readLine();
-                trimmed = userInput.trim();
-                int idx = Integer.parseInt(trimmed);
-                if (idx!=-1){
-                   System.out.println(corpus.getDocument(idx).getContent());
+                System.out.println(postings.size());
+                if (!postings.isEmpty()) {
+                    System.out.print("Enter docid to view or -1 to skip: ");
+                    userInput = br.readLine();
+                    trimmed = userInput.trim();
+                    int idx = Integer.parseInt(trimmed);
+                    if (idx != -1) {
+readDocument(corpus.getDocument(idx));
+                    }
                 }
             System.out.print("\n\n\n");}
         } while (!userInput.equals(":q"));
     }
+
+    private static void readDocument(Document document) throws IOException {
+BufferedReader reader = new BufferedReader(document.getContent());
+        String line;
+        while ((line = reader.readLine()) != null) {
+            System.out.println(line);
+        }
+}
 
     private static Index indexCorpus(DocumentCorpus corpus) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         ComplexTokenProcessor processor = new ComplexTokenProcessor();
