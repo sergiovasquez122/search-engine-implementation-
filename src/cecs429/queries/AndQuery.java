@@ -23,7 +23,7 @@ public class AndQuery implements QueryComponent {
 		List<Posting> result = null;
 		int idx = 0;
 		result = mComponents.get(idx++).getPostings(index);
-		while (idx< mComponents.size() && (!result.isEmpty()))
+		while (idx< mComponents.size() )
 		{
 			result = intersect(result,mComponents.get(idx++).getPostings(index));
 		}
@@ -34,6 +34,9 @@ public class AndQuery implements QueryComponent {
 		List<Posting> result = new ArrayList<>();
 		int l1_idx =0;
 		int l2_idx =0;
+		if (l2==null){
+			return l1;
+		}
 		while (l1_idx<l1.size()&&l2_idx<l2.size()){
 			Posting p1=l1.get(l1_idx);
 			Posting p2=l2.get(l2_idx);

@@ -4,7 +4,10 @@ import cecs429.documents.*;
 import cecs429.indexing.Index;
 import cecs429.indexing.PositionalInvertedIndex;
 import cecs429.indexing.Posting;
+import cecs429.queries.BooleanQueryParser;
+import cecs429.queries.QueryComponent;
 import cecs429.text.BasicTokenProcessor;
+import cecs429.text.ComplexTokenProcessor;
 import cecs429.text.EnglishTokenStream;
 import org.tartarus.snowball.SnowballStemmer;
 
@@ -25,6 +28,7 @@ public class InvertedIndexIndexer {
         InputStreamReader inp = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(inp);
         String userInput;
+        BooleanQueryParser parser=new BooleanQueryParser();
         do {
             System.out.print("Enter query: ");
             userInput = br.readLine();
@@ -33,15 +37,27 @@ public class InvertedIndexIndexer {
             {
                 SpecialQuery(trimmed,corpus,index);
             }
-            else {for (Posting p : index.getPostings(userInput)) {
-                System.out.println("Document " + corpus.getDocument(p.getDocumentId()).getTitle());
-            }
+            else {
+                QueryComponent component= parser.parseQuery(userInput);
+                List<Posting> postings = component.getPostings(index);
+                for (int i=0;i<postings.size();i++){
+                    Posting p = postings.get(i);
+                    System.out.println("Document " + i + ": "+ corpus.getDocument(p.getDocumentId()).getTitle());
+                }
+                System.out.println(component.getPostings(index).size());
+                System.out.print("Enter docid to view or -1 to skip: ");
+                userInput = br.readLine();
+                trimmed = userInput.trim();
+                int idx = Integer.parseInt(trimmed);
+                if (idx!=-1){
+                   System.out.println(corpus.getDocument(idx).getContent());
+                }
             System.out.print("\n\n\n");}
-        } while (!userInput.equals("quit"));
+        } while (!userInput.equals(":q"));
     }
 
-    private static Index indexCorpus(DocumentCorpus corpus) {
-        BasicTokenProcessor processor = new BasicTokenProcessor();
+    private static Index indexCorpus(DocumentCorpus corpus) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        ComplexTokenProcessor processor = new ComplexTokenProcessor();
 
         PositionalInvertedIndex invertedIndex = new PositionalInvertedIndex();
         for (Document d : corpus.getDocuments()) {

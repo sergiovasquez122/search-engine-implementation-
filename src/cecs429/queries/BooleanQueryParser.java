@@ -151,7 +151,13 @@ public class BooleanQueryParser {
 		if (subquery.charAt(startIndex) == '"'){
 			++startIndex;
 			int nextQuote = subquery.indexOf('"',startIndex);
-			lengthOut = nextQuote - startIndex;
+			if (nextQuote < 0){
+				lengthOut = subLength - startIndex;
+
+			}
+			else {
+				lengthOut = nextQuote - startIndex;
+			}
 			return new Literal(new StringBounds(startIndex,lengthOut),
 					new PhraseLiteral(subquery.substring(startIndex, startIndex + lengthOut)));
 		}

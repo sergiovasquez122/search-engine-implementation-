@@ -32,14 +32,14 @@ public class PhraseLiteral implements QueryComponent {
 	
 	@Override
 	public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		List<Posting> result = null;
+		List<Posting> result = new ArrayList<>();
 		ComplexTokenProcessor processor = new ComplexTokenProcessor();
+		List<String> s1=processor.processToken(mTerms.get(0));
+		result= index.getPostings(s1.get(s1.size()-1));
 		for (int k=1;k<= mTerms.size()-1;k++){
-			List<String> s1=processor.processToken(mTerms.get(k-1));
 			List<String> s2=processor.processToken(mTerms.get(k));
-			List<Posting> p1 = index.getPostings(s1.get(s1.size()-1));
 			List<Posting> p2 = index.getPostings(s2.get(s2.size()-1));
-			result=PositionalIntersect(p1,p2,k);
+			result=PositionalIntersect(result,p2,k);
 		}
 		return result;
 
@@ -61,14 +61,14 @@ public class PhraseLiteral implements QueryComponent {
 				}
 				pp2idx++;
 			}
-			while ((!l.isEmpty()) && Math.abs(l.get(0)-pp2.get(pp2idx))>k){
+			while ((!l.isEmpty()) && Math.abs(l.get(0)-pp1.get(pp1idx))>k){
 				l.remove(0);
 			}
 			for (Integer pos : l){
 				if (!answer.isEmpty() && answer.get(answer.size()-1).getDocumentId()==p1.getDocumentId()){
-					answer.get(answer.size()-1).addPos(pp1idx);
+					answer.get(answer.size()-1).addPos(pp1.get(pp1idx));
 				}else {
-					answer.add(new Posting(p1.getDocumentId(),pp1idx));
+					answer.add(new Posting(p1.getDocumentId(),pp1.get(pp1idx)));
 				}
 			}
 			pp1idx++;
@@ -83,10 +83,12 @@ public class PhraseLiteral implements QueryComponent {
 			Posting posting1 = p1.get(l1_idx);
 			Posting posting2 = p2.get(l2_idx);
 			if (posting1.getDocumentId()==posting2.getDocumentId()){
+				intersectHelper(posting1,posting2,k,answer);
 				l1_idx++;
 				l2_idx++;
 			}else if (posting1.getDocumentId()<posting2.getDocumentId()){
 				l1_idx++;
+			}else {
 				l2_idx++;
 			}
 		}
