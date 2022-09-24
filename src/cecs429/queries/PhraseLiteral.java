@@ -75,7 +75,7 @@ public class PhraseLiteral implements QueryComponent {
 		}
 	}
 
-	private static List<Posting> PositionalIntersect(List<Posting> p1,List<Posting> p2, int k){
+	public static List<Posting> PositionalIntersect(List<Posting> p1,List<Posting> p2, int k){
 		List<Posting> answer = new ArrayList<>();
 		int l1_idx =0;
 		int l2_idx =0;

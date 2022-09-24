@@ -147,6 +147,19 @@ public class BooleanQueryParser {
 		while (subquery.charAt(startIndex) == ' ') {
 			++startIndex;
 		}
+		if (subquery.charAt(startIndex) == '['){
+			++startIndex;
+			int nextBracket = subquery.indexOf(']',startIndex);
+			if (nextBracket < 0){
+				lengthOut = subLength - startIndex;
+
+			}
+			else {
+				lengthOut = nextBracket - startIndex;
+			}
+			return new Literal(new StringBounds(startIndex,lengthOut),
+					new NearLiteral(subquery.substring(startIndex, startIndex + lengthOut)));
+		}
 
 		if (subquery.charAt(startIndex) == '"'){
 			++startIndex;
