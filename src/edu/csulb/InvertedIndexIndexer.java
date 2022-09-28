@@ -6,7 +6,6 @@ import cecs429.indexing.PositionalInvertedIndex;
 import cecs429.indexing.Posting;
 import cecs429.queries.BooleanQueryParser;
 import cecs429.queries.QueryComponent;
-import cecs429.text.BasicTokenProcessor;
 import cecs429.text.ComplexTokenProcessor;
 import cecs429.text.EnglishTokenStream;
 import org.tartarus.snowball.SnowballStemmer;
@@ -18,7 +17,9 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class InvertedIndexIndexer {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
@@ -89,12 +90,23 @@ BufferedReader reader = new BufferedReader(document.getContent());
         ComplexTokenProcessor processor = new ComplexTokenProcessor();
 
         PositionalInvertedIndex invertedIndex = new PositionalInvertedIndex();
+        Queue<String> queue = new LinkedList<>();
         for (Document d : corpus.getDocuments()) {
             EnglishTokenStream englishTokenStream = new EnglishTokenStream(d.getContent());
             int token = 1;
             for (String word : englishTokenStream.getTokens()) {
+                queue.add(word);
                 for (String processedWord : processor.processToken(word)) {
                     invertedIndex.addTerm(processedWord, d.getId(), token);
+                }
+                if (queue.size()==2){
+                   String s1 = queue.poll();
+                   String s2 = queue.peek();
+                   for (String s1processed : processor.processToken(s1)){
+                       for (String s2processed : processor.processToken(s2)){
+                            invertedIndex.addTerm(new StringBuilder().append(s1processed).append(" ").append(s2processed).toString(), d.getId(), token);
+                       }
+                   }
                 }
                 token++;
             }
@@ -102,19 +114,6 @@ BufferedReader reader = new BufferedReader(document.getContent());
         return invertedIndex;
     }
 
-    private static void SpecialQuery(String input,DirectoryCorpus corpus, Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
-        switch (input) {
-            case ":q" -> System.exit(0);
-            case ":vocab" -> Vocab(index);
-        }
-      String[] strings = input.split(" ");
-        if (strings[0].equals(":index")){
-            corpus = IndexFromFile(strings[1]);
-            index = indexCorpus(corpus);
-        }else if (strings[0].equals(":stem")){
-            System.out.println(Stem(strings[1]));
-        }
-    }
     private static DirectoryCorpus IndexFromFile(String string) throws IOException {
         if (isValidPath(string)){
                     DirectoryCorpus directoryCorpus = new DirectoryCorpus(Path.of(string));
