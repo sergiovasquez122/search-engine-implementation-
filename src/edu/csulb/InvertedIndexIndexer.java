@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -41,7 +40,21 @@ public class InvertedIndexIndexer {
             String trimmed = userInput.trim();
             if (trimmed.startsWith(":"))
             {
-                SpecialQuery(trimmed,corpus,index);
+                switch (trimmed) {
+                    case ":q" -> System.exit(0);
+                    case ":vocab" -> Vocab(index);
+                }
+                String[] strings = trimmed.split(" ");
+                if (strings[0].equals(":index")){
+                    corpus = IndexFromFile(strings[1]);
+                    start = Instant.now();
+                    index = indexCorpus(corpus);
+                    end = Instant.now();
+                    timeElapsed = Duration.between(start, end);
+                    System.out.println("Time taken: "+ timeElapsed.toSeconds() +" seconds");
+                }else if (strings[0].equals(":stem")){
+                    System.out.println(Stem(strings[1]));
+                }
             }
             else {
                 QueryComponent component= parser.parseQuery(userInput);
