@@ -95,18 +95,15 @@ BufferedReader reader = new BufferedReader(document.getContent());
             EnglishTokenStream englishTokenStream = new EnglishTokenStream(d.getContent());
             int token = 1;
             for (String word : englishTokenStream.getTokens()) {
-                queue.add(word);
-                for (String processedWord : processor.processToken(word)) {
+                List<String> strings=processor.processToken(word);
+                for (String processedWord : strings) {
                     invertedIndex.addTerm(processedWord, d.getId(), token);
                 }
+                queue.add(strings.get(0));
                 if (queue.size()==2){
                    String s1 = queue.poll();
                    String s2 = queue.peek();
-                   for (String s1processed : processor.processToken(s1)){
-                       for (String s2processed : processor.processToken(s2)){
-                            invertedIndex.addTerm(new StringBuilder().append(s1processed).append(" ").append(s2processed).toString(), d.getId(), token);
-                       }
-                   }
+                            invertedIndex.addTerm(new StringBuilder().append(s1).append(" ").append(s2).toString(), d.getId(), token);
                 }
                 token++;
             }
