@@ -1,8 +1,6 @@
 package cecs429.queries;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import cecs429.indexing.Index;
@@ -20,11 +18,16 @@ public class AndQuery implements QueryComponent {
 	
 	@Override
 	public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		List<List<Posting>> postings = new ArrayList<>();
+		for (QueryComponent component : mComponents){
+			postings.add(component.getPostings(index));
+		}
+		postings.sort(Comparator.comparingInt(List::size));
 		int idx = 1;
-		List<Posting> result= mComponents.get(0).getPostings(index);
-		while (idx< mComponents.size() && !result.isEmpty())
+		List<Posting> result= postings.get(0);
+		while (idx<  postings.size() && !result.isEmpty())
 		{
-			result = intersect(result, mComponents.get(idx).getPostings(index));
+			result = intersect(result, postings.get(idx));
 			idx++;
 		}
 		return result;
