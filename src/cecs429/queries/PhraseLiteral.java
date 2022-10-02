@@ -34,11 +34,6 @@ public class PhraseLiteral implements QueryComponent {
 	public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		ComplexTokenProcessor processor = new ComplexTokenProcessor();
 		List<String> s1=processor.processToken(mTerms.get(0));
-		if (mTerms.size()==2){
-
-			List<String> s2=processor.processToken(mTerms.get(1));
-			return index.getPostings(s1.get(s1.size()-1)+ " "+ s2.get(s2.size()-1));
-		}
 		List<Posting> result = new ArrayList<>(index.getPostings(s1.get(s1.size() - 1)));
 		for (int k=1;k<= mTerms.size()-1;k++){
 			List<String> s2=processor.processToken(mTerms.get(k));

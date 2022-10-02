@@ -20,7 +20,7 @@ public class OrQuery implements QueryComponent {
 	
 		public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 			int idx = 1;
-			List<Posting> result = new ArrayList<>(mComponents.get(0).getPostings(index));
+			List<Posting> result= mComponents.get(0).getPostings(index);
 			while (idx< mComponents.size() )
 			{
 				result = intersect(result, mComponents.get(idx).getPostings(index));
