@@ -8,13 +8,19 @@ import java.util.List;
  */
 public class Posting {
 	private int mDocumentId;
+
+	private int tftd = 0;
+
 	private List<Integer> mPos =new ArrayList<>();
 
 	public List<Integer> getPos() {
 		return mPos;
 	}
 
-	public void addPos(int pos){mPos.add(pos);}
+	public void addPos(int pos){
+		mPos.add(pos);
+		tftd++;
+	}
 
 	public Posting(int documentId) {
 		mDocumentId = documentId;
@@ -22,7 +28,11 @@ public class Posting {
 
 	public Posting(int documentId, int pos){
 		mDocumentId=documentId;
-		mPos.add(pos);
+		addPos(pos);
+	}
+
+	public int getTftd(){
+		return tftd;
 	}
 	
 	public int getDocumentId() {

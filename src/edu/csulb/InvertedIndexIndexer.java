@@ -59,12 +59,16 @@ public class InvertedIndexIndexer {
             }
             else {
                 QueryComponent component= parser.parseQuery(userInput);
+                start = Instant.now();
                 List<Posting> postings = component.getPostings(index);
+                end = Instant.now();
+                timeElapsed = Duration.between(start, end);
                 for (int i=0;i<postings.size();i++){
                     Posting p = postings.get(i);
                     System.out.println("Document " + i + ": "+ corpus.getDocument(p.getDocumentId()).getTitle());
                 }
                 System.out.println(postings.size());
+                System.out.println("Time taken: "+ timeElapsed.toMillis() +" milliseconds");
                 if (!postings.isEmpty()) {
                     System.out.print("Enter docid to view or -1 to skip: ");
                     userInput = br.readLine();
