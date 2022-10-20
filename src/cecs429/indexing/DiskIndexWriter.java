@@ -18,7 +18,6 @@ public class DiskIndexWriter {
             for (Posting posting : postings){
                 randomAccessFile.writeInt(posting.getDocumentId() - lastID);
                 lastID = posting.getDocumentId();
-
                 int lastPos = 0;
                 randomAccessFile.writeInt(posting.getTftd());
                 for (int position : posting.getPos()){

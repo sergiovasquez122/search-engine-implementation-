@@ -22,6 +22,10 @@ public class Posting {
 		tftd++;
 	}
 
+	public void setTftd(int tftd){
+		this.tftd=tftd;
+	}
+
 	public Posting(int documentId) {
 		mDocumentId = documentId;
 	}
