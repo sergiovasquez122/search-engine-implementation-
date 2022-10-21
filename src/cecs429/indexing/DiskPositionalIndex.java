@@ -32,6 +32,22 @@ public class DiskPositionalIndex implements Index{
     }
 
     @Override
+    public List<Posting> getPostingsWithoutPos(String term) throws IOException {
+        List<Posting> result = new ArrayList<>();
+        int dft = randomAccessFile.readInt();
+        int gap=0;
+        for (int i = 0;i<dft;i++){
+            int id=randomAccessFile.readInt();
+            Posting posting = new Posting(id-gap);
+            gap=id;
+            int tftd = randomAccessFile.readInt();
+            randomAccessFile.skipBytes(tftd*4);
+            result.add(posting);
+        }
+        return result;
+    }
+
+    @Override
     public List<String> getVocabulary() {
         return null;
     }

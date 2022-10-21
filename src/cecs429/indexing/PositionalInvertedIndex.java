@@ -1,6 +1,7 @@
 package cecs429.indexing;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,6 +16,11 @@ public class PositionalInvertedIndex implements Index{
             return termToDocID.get(term);
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public List<Posting> getPostingsWithoutPos(String term) throws IOException {
+        return null;
     }
 
     @Override
