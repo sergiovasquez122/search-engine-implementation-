@@ -3,14 +3,23 @@ package cecs429.indexing;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DiskPositionalIndex implements Index{
 
     @Override
-    public List<Posting> getPostings(String term) throws IOException {
+    public List<Posting> getPostings(String term) throws IOException, SQLException {
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:terms.sqlite");
+        PreparedStatement statement = connection.prepareStatement("select * from terms where term=?");
         List<Posting> result = new ArrayList<>();
+        ResultSet resultSet= statement.executeQuery();
+        if (!resultSet.next()){
+            return result;
+        }
+        int bytepos = resultSet.getInt("pos");
+        randomAccessFile.seek(bytepos);
         int dft = randomAccessFile.readInt();
         int gap=0;
         for (int i = 0;i<dft;i++){
@@ -32,8 +41,16 @@ public class DiskPositionalIndex implements Index{
     }
 
     @Override
-    public List<Posting> getPostingsWithoutPos(String term) throws IOException {
+    public List<Posting> getPostingsWithoutPos(String term) throws IOException, SQLException {
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:terms.sqlite");
+        PreparedStatement statement = connection.prepareStatement("select * from terms where term=?");
         List<Posting> result = new ArrayList<>();
+        ResultSet resultSet= statement.executeQuery();
+        if (!resultSet.next()){
+            return result;
+        }
+        int pos = resultSet.getInt("pos");
+        randomAccessFile.seek(pos);
         int dft = randomAccessFile.readInt();
         int gap=0;
         for (int i = 0;i<dft;i++){
