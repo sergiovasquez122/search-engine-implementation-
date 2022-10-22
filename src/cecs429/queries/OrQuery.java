@@ -1,5 +1,7 @@
 package cecs429.queries;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +20,7 @@ public class OrQuery implements QueryComponent {
 		mComponents = components;
 	}
 	
-		public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, IOException {
 			int idx = 1;
 			List<Posting> result= mComponents.get(0).getPostings(index);
 			while (idx< mComponents.size() )

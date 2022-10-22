@@ -1,5 +1,7 @@
 package cecs429.queries;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import cecs429.indexing.Index;
@@ -21,10 +23,10 @@ public class TermLiteral implements QueryComponent {
 	}
 	
 	@Override
-	public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, IOException {
 		ComplexTokenProcessor processor = new ComplexTokenProcessor();
 		List<String> strings=processor.processToken(mTerm);
-		return index.getPostings(strings.get(strings.size()-1));
+		return index.getPostingsWithoutPos(strings.get(strings.size()-1));
 	}
 	
 	@Override

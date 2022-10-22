@@ -1,5 +1,6 @@
 package cecs429.queries;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import cecs429.indexing.*;
@@ -12,5 +13,5 @@ public interface QueryComponent {
     /**
      * Retrieves a list of postings for the query component, using an Index as the source.
      */
-    List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException;
+    List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, SQLException;
 }

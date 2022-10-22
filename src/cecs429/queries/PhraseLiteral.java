@@ -1,6 +1,7 @@
 package cecs429.queries;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +33,7 @@ public class PhraseLiteral implements QueryComponent {
 	}
 	
 	@Override
-	public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
+	public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, SQLException {
 		ComplexTokenProcessor processor = new ComplexTokenProcessor();
 		List<String> s1=processor.processToken(mTerms.get(0));
 		List<Posting> result = new ArrayList<>(index.getPostings(s1.get(s1.size() - 1)));

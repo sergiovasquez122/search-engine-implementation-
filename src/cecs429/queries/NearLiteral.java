@@ -4,6 +4,8 @@ import cecs429.indexing.Index;
 import cecs429.indexing.Posting;
 import cecs429.text.ComplexTokenProcessor;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +17,7 @@ public class NearLiteral implements QueryComponent{
     }
 
     @Override
-    public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, IOException {
         ComplexTokenProcessor processor = new ComplexTokenProcessor();
         List<String> s1=processor.processToken(mTerms.get(0));
         List<String> s2=processor.processToken(mTerms.get(2));
