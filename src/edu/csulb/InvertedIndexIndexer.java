@@ -15,14 +15,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class InvertedIndexIndexer {
-    public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         // Create a DocumentCorpus to load .txt documents from the project directory.
          DirectoryCorpus corpus = findCorpus();
         // Index the documents of the corpus.
@@ -89,21 +88,36 @@ BufferedReader reader = new BufferedReader(document.getContent());
             System.out.println(line);
         }
 }
-
+private static double euclideanWeight(HashMap<String, Integer> hashMap){
+        double ld=0;
+        for (String k: hashMap.keySet()){
+            int tftd = hashMap.get(k);
+            double w = 1 + Math.log(tftd);
+            ld=w*w;
+        }
+        return Math.sqrt(ld);
+}
     private static Index indexCorpus(DocumentCorpus corpus) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         ComplexTokenProcessor processor = new ComplexTokenProcessor();
-
         PositionalInvertedIndex invertedIndex = new PositionalInvertedIndex();
+
         for (Document d : corpus.getDocuments()) {
+            HashMap<String, Integer> tftd= new LinkedHashMap<>();
             EnglishTokenStream englishTokenStream = new EnglishTokenStream(d.getContent());
             int token = 1;
             for (String word : englishTokenStream.getTokens()) {
                 List<String> strings=processor.processToken(word);
                 for (String processedWord : strings) {
+                    if (!tftd.containsKey(processedWord)){
+                        tftd.put(processedWord, 1);
+                    } else {
+                        tftd.put(processedWord, tftd.get(processedWord)+1);
+                    }
                     invertedIndex.addTerm(processedWord, d.getId(), token);
                 }
                 token++;
             }
+
         }
         return invertedIndex;
     }
