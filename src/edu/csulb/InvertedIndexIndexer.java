@@ -93,7 +93,7 @@ private static double euclideanWeight(HashMap<String, Integer> hashMap){
         for (String k: hashMap.keySet()){
             int tftd = hashMap.get(k);
             double w = 1 + Math.log(tftd);
-            ld=w*w;
+            ld+=w*w;
         }
         return Math.sqrt(ld);
 }
@@ -117,7 +117,7 @@ private static double euclideanWeight(HashMap<String, Integer> hashMap){
                 }
                 token++;
             }
-
+            double ld = euclideanWeight(tftd);
         }
         return invertedIndex;
     }
