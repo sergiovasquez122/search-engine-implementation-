@@ -60,5 +60,6 @@ public class DiskIndexWriter {
             bytepos=newBytePos;
         }
 
+        connection.close();
     }
 }
