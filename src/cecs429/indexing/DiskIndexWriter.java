@@ -9,7 +9,7 @@ import java.sql.*;
 import java.util.List;
 
 public class DiskIndexWriter {
-    private RandomAccessFile weightsFile = new RandomAccessFile(Paths.get("").toAbsolutePath().toString()+"\\weights.bin", "rw");
+    private RandomAccessFile weightsFile = new RandomAccessFile(Paths.get("").toAbsolutePath().toString()+"\\docWeights.bin", "rw");
     private RandomAccessFile randomAccessFile = new RandomAccessFile(Paths.get("").toAbsolutePath().toString()+"\\post.bin","rw");
 
     public DiskIndexWriter() throws FileNotFoundException {
