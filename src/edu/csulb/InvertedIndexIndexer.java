@@ -1,6 +1,7 @@
 package edu.csulb;
 
 import cecs429.documents.*;
+import cecs429.indexing.DiskIndexWriter;
 import cecs429.indexing.Index;
 import cecs429.indexing.PositionalInvertedIndex;
 import cecs429.indexing.Posting;
@@ -10,10 +11,7 @@ import cecs429.text.ComplexTokenProcessor;
 import cecs429.text.EnglishTokenStream;
 import org.tartarus.snowball.SnowballStemmer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -97,10 +95,10 @@ private static double euclideanWeight(HashMap<String, Integer> hashMap){
         }
         return Math.sqrt(ld);
 }
-    private static Index indexCorpus(DocumentCorpus corpus) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    private static Index indexCorpus(DocumentCorpus corpus) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, SQLException {
         ComplexTokenProcessor processor = new ComplexTokenProcessor();
         PositionalInvertedIndex invertedIndex = new PositionalInvertedIndex();
-
+        DiskIndexWriter indexWriter= new DiskIndexWriter();
         for (Document d : corpus.getDocuments()) {
             HashMap<String, Integer> tftd= new LinkedHashMap<>();
             EnglishTokenStream englishTokenStream = new EnglishTokenStream(d.getContent());
@@ -118,7 +116,9 @@ private static double euclideanWeight(HashMap<String, Integer> hashMap){
                 token++;
             }
             double ld = euclideanWeight(tftd);
+            indexWriter.setWeightsFile(d.getId(), ld);
         }
+        indexWriter.writeIndex(invertedIndex);
         return invertedIndex;
     }
 

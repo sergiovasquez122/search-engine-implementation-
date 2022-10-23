@@ -25,8 +25,7 @@ public class DiskIndexWriter {
         randomAccessFile.close();
     }
 
-    public void writeIndex(PositionalInvertedIndex index, String absoluteFilePath) throws IOException, SQLException {
-        RandomAccessFile randomAccessFile = new RandomAccessFile(absoluteFilePath,"rw");
+    public void writeIndex(PositionalInvertedIndex index) throws IOException, SQLException {
         List<String> vocabulary = index.getVocabulary();
         Connection connection = DriverManager.getConnection("jdbc:sqlite:terms.sqlite");
         PreparedStatement statement = connection.prepareStatement("insert into terms values(?,?)");
