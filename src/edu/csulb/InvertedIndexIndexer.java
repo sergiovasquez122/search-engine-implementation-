@@ -119,6 +119,7 @@ private static double euclideanWeight(HashMap<String, Integer> hashMap){
             indexWriter.setWeightsFile(d.getId(), ld);
         }
         indexWriter.writeIndex(invertedIndex);
+        indexWriter.close();
         return invertedIndex;
     }
 
