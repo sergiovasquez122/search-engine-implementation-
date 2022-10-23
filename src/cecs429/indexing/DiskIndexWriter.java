@@ -4,10 +4,27 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.List;
 
 public class DiskIndexWriter {
+    private RandomAccessFile weightsFile = new RandomAccessFile(Paths.get("").toAbsolutePath().toString()+"\\weights.bin", "rw");
+    private RandomAccessFile randomAccessFile = new RandomAccessFile(Paths.get("").toAbsolutePath().toString()+"\\post.bin","rw");
+
+    public DiskIndexWriter() throws FileNotFoundException {
+    }
+
+    public void setWeightsFile(int docId, double weight) throws IOException {
+        weightsFile.seek((docId-1)* 8L);
+        weightsFile.writeDouble(weight);
+    }
+
+    public void close() throws IOException {
+        weightsFile.close();
+        randomAccessFile.close();
+    }
+
     public void writeIndex(PositionalInvertedIndex index, String absoluteFilePath) throws IOException, SQLException {
         RandomAccessFile randomAccessFile = new RandomAccessFile(absoluteFilePath,"rw");
         List<String> vocabulary = index.getVocabulary();
@@ -43,5 +60,6 @@ public class DiskIndexWriter {
 
             bytepos=newBytePos;
         }
+
     }
 }
