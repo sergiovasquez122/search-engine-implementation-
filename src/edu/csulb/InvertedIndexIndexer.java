@@ -20,6 +20,16 @@ import java.util.*;
 
 public class InvertedIndexIndexer {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+        displayIndexOptions();
+        int input = userInput("input: ");
+        if (input==1){
+            DirectoryCorpus corpus = findCorpus();
+            Index index = indexCorpus(corpus);
+            System.exit(0);
+        }
+        displayQueryOption();
+        input = userInput("input: ");
+
         // Create a DocumentCorpus to load .txt documents from the project directory.
          DirectoryCorpus corpus = findCorpus();
         // Index the documents of the corpus.
@@ -77,6 +87,16 @@ readDocument(corpus.getDocument(idx));
                 }
             System.out.print("\n\n\n");}
         } while (!userInput.equals(":q"));
+    }
+
+    private static int userInput(String message) throws IOException {
+        System.out.print(message);
+        InputStreamReader inp = new InputStreamReader(System.in);
+        BufferedReader br = new BufferedReader(inp);
+        String userInput;
+        userInput = br.readLine();
+        int idx = Integer.parseInt(userInput);
+        return idx;
     }
 
     private static void readDocument(Document document) throws IOException {

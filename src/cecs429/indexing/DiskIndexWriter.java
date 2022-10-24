@@ -16,7 +16,6 @@ public class DiskIndexWriter {
     }
 
     public void setWeightsFile(int docId, double weight) throws IOException {
-        weightsFile.seek((docId-1)* 8L);
         weightsFile.writeDouble(weight);
     }
 
@@ -28,7 +27,7 @@ public class DiskIndexWriter {
     public void writeIndex(PositionalInvertedIndex index) throws IOException, SQLException {
         List<String> vocabulary = index.getVocabulary();
         Connection connection = DriverManager.getConnection("jdbc:sqlite:terms.sqlite");
-        PreparedStatement statement = connection.prepareStatement("insert into terms values(?,?)");
+        PreparedStatement statement = connection.prepareStatement("insert into terms values(?,?) on conflict do nothing");
         statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
         int bytepos = 0;
