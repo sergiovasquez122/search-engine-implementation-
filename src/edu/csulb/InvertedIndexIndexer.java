@@ -95,6 +95,17 @@ private static double euclideanWeight(HashMap<String, Integer> hashMap){
         }
         return Math.sqrt(ld);
 }
+
+private static void displayIndexOptions(){
+        System.out.println("1. index corpus");
+    System.out.println("2. query corpus");
+}
+
+private static void displayQueryOption(){
+    System.out.println("1. ranked retrieval");
+    System.out.println("2. boolean retrieval");
+
+}
     private static Index indexCorpus(DocumentCorpus corpus) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, SQLException {
         ComplexTokenProcessor processor = new ComplexTokenProcessor();
         PositionalInvertedIndex invertedIndex = new PositionalInvertedIndex();
