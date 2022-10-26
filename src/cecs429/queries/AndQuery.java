@@ -24,7 +24,7 @@ public class AndQuery implements QueryComponent {
 	public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, SQLException {
 		int idx = 1;
 		List<Posting> result= mComponents.get(0).getPostings(index);
-		while (idx< mComponents.size() && !result.isEmpty())
+		while (idx< mComponents.size() )
 		{
 			result = intersect(result, mComponents.get(idx).getPostings(index));
 			idx++;

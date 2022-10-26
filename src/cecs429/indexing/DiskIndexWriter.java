@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DiskIndexWriter {
     private RandomAccessFile weightsFile = new RandomAccessFile(Paths.get("").toAbsolutePath().toString()+"\\docWeights.bin", "rw");
-    private RandomAccessFile randomAccessFile = new RandomAccessFile(Paths.get("").toAbsolutePath().toString()+"\\post.bin","rw");
+    private RandomAccessFile randomAccessFile = new RandomAccessFile(Paths.get("").toAbsolutePath().toString()+"\\posting.bin","rw");
 
     public DiskIndexWriter() throws FileNotFoundException {
     }
@@ -30,8 +30,12 @@ public class DiskIndexWriter {
         PreparedStatement statement = connection.prepareStatement("insert into terms values(?,?) on conflict do nothing");
         statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
+
         int bytepos = 0;
         for (String term : vocabulary){
+            statement.setString(1, term);
+            statement.setInt(2, (int) randomAccessFile.getFilePointer());
+            statement.executeUpdate();
             List<Posting> postings = index.getPostings(term);
             // dft
             int newBytePos = bytepos;
@@ -44,17 +48,13 @@ public class DiskIndexWriter {
                 lastID = posting.getDocumentId();
                 int lastPos = 0;
                 newBytePos+=4;
-                randomAccessFile.writeInt(posting.getTftd());
+                randomAccessFile.writeInt(posting.getPos().size());
                 for (int position : posting.getPos()){
                     newBytePos+=4;
                     randomAccessFile.writeInt(position-lastPos);
                     lastPos=position;
                 }
             }
-
-            statement.setString(1, term);
-            statement.setInt(2, bytepos);
-            statement.executeUpdate();
 
             bytepos=newBytePos;
         }

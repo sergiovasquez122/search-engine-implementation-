@@ -135,6 +135,9 @@ private static void displayQueryOption(){
             for (String word : englishTokenStream.getTokens()) {
                 List<String> strings=processor.processToken(word);
                 for (String processedWord : strings) {
+                    if (processedWord.trim().isEmpty()){
+                        continue;
+                    }
                     if (!tftd.containsKey(processedWord)){
                         tftd.put(processedWord, 1);
                     } else {
