@@ -9,10 +9,11 @@ import java.util.List;
 
 public class DiskPositionalIndex implements Index{
 
+    private Connection connection;
     @Override
     public List<Posting> getPostings(String term) throws IOException, SQLException {
-        Connection connection = DriverManager.getConnection("jdbc:sqlite:terms.sqlite");
         PreparedStatement statement = connection.prepareStatement("select * from terms where term=?");
+        statement.setString(1, term);
         List<Posting> result = new ArrayList<>();
         ResultSet resultSet= statement.executeQuery();
         if (!resultSet.next()){
@@ -42,8 +43,8 @@ public class DiskPositionalIndex implements Index{
 
     @Override
     public List<Posting> getPostingsWithoutPos(String term) throws IOException, SQLException {
-        Connection connection = DriverManager.getConnection("jdbc:sqlite:terms.sqlite");
         PreparedStatement statement = connection.prepareStatement("select * from terms where term=?");
+        statement.setString(1, term);
         List<Posting> result = new ArrayList<>();
         ResultSet resultSet= statement.executeQuery();
         if (!resultSet.next()){
@@ -55,10 +56,12 @@ public class DiskPositionalIndex implements Index{
         int gap=0;
         for (int i = 0;i<dft;i++){
             int id=randomAccessFile.readInt();
-            Posting posting = new Posting(id-gap);
+            Posting posting = new Posting(id+gap);
             gap=id;
             int tftd = randomAccessFile.readInt();
-            randomAccessFile.skipBytes(tftd*4);
+            for (int j=0;j<tftd;j++){
+                randomAccessFile.readInt();
+            }
             result.add(posting);
         }
         return result;
@@ -69,8 +72,9 @@ public class DiskPositionalIndex implements Index{
         return null;
     }
 
-    public DiskPositionalIndex(String absoluteFilePath) throws FileNotFoundException {
+    public DiskPositionalIndex(String absoluteFilePath) throws FileNotFoundException, SQLException {
         randomAccessFile = new RandomAccessFile(absoluteFilePath,"r");
+        connection = DriverManager.getConnection("jdbc:sqlite:terms.sqlite");
     }
 
     private RandomAccessFile randomAccessFile;

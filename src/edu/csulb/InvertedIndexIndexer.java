@@ -1,10 +1,7 @@
 package edu.csulb;
 
 import cecs429.documents.*;
-import cecs429.indexing.DiskIndexWriter;
-import cecs429.indexing.Index;
-import cecs429.indexing.PositionalInvertedIndex;
-import cecs429.indexing.Posting;
+import cecs429.indexing.*;
 import cecs429.queries.BooleanQueryParser;
 import cecs429.queries.QueryComponent;
 import cecs429.text.ComplexTokenProcessor;
@@ -22,22 +19,22 @@ public class InvertedIndexIndexer {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         displayIndexOptions();
         int input = userInput("input: ");
+        DirectoryCorpus corpus = findCorpus();
         if (input==1){
-            DirectoryCorpus corpus = findCorpus();
+            Instant start = Instant.now();
             Index index = indexCorpus(corpus);
+            Instant end = Instant.now();
+            Duration timeElapsed = Duration.between(start, end);
+            System.out.println("Time taken: "+ timeElapsed.toSeconds() +" seconds");
             System.exit(0);
         }
         displayQueryOption();
         input = userInput("input: ");
 
-        // Create a DocumentCorpus to load .txt documents from the project directory.
-         DirectoryCorpus corpus = findCorpus();
-        // Index the documents of the corpus.
-        Instant start = Instant.now();
-        Index index = indexCorpus(corpus);
-        Instant end = Instant.now();
-        Duration timeElapsed = Duration.between(start, end);
-        System.out.println("Time taken: "+ timeElapsed.toSeconds() +" seconds");
+        Index index;
+            String file = findFile();
+            index = new DiskPositionalIndex(file);
+            corpus.getDocuments();
         InputStreamReader inp = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(inp);
         String userInput;
@@ -55,21 +52,22 @@ public class InvertedIndexIndexer {
                 String[] strings = trimmed.split(" ");
                 if (strings[0].equals(":index")){
                     corpus = IndexFromFile(strings[1]);
-                    start = Instant.now();
+                    Instant start = Instant.now();
                     index = indexCorpus(corpus);
-                    end = Instant.now();
-                    timeElapsed = Duration.between(start, end);
+                    Instant end = Instant.now();
+                    Duration timeElapsed = Duration.between(start, end);
                     System.out.println("Time taken: "+ timeElapsed.toSeconds() +" seconds");
+                    System.exit(0);
                 }else if (strings[0].equals(":stem")){
                     System.out.println(Stem(strings[1]));
                 }
             }
             else {
                 QueryComponent component= parser.parseQuery(userInput);
-                start = Instant.now();
+                Instant start = Instant.now();
                 List<Posting> postings = component.getPostings(index);
-                end = Instant.now();
-                timeElapsed = Duration.between(start, end);
+                Instant end = Instant.now();
+                Duration timeElapsed = Duration.between(start, end);
                 for (int i=0;i<postings.size();i++){
                     Posting p = postings.get(i);
                     System.out.println("Document " + i + ": "+ corpus.getDocument(p.getDocumentId()).getTitle());
@@ -178,6 +176,17 @@ private static void displayQueryOption(){
         stemmer.stem();
         return stemmer.getCurrent();
     }
+    
+    private static String findFile() throws IOException {
+        InputStreamReader inp = new InputStreamReader(System.in);
+        BufferedReader br = new BufferedReader(inp);
+        String userInput;
+        do {
+            System.out.print("Enter path: ");
+            userInput = br.readLine();
+        } while (!isValidPath(userInput));
+        return userInput;
+    }
 
     private static DirectoryCorpus findCorpus() throws IOException {
         InputStreamReader inp = new InputStreamReader(System.in);
@@ -187,7 +196,7 @@ private static void displayQueryOption(){
             System.out.print("Enter path: ");
             userInput = br.readLine();
         } while (!isValidPath(userInput));
-       DirectoryCorpus directoryCorpus = new DirectoryCorpus(Path.of(userInput));
+       DirectoryCorpus directoryCorpus = new DirectoryCorpus(Path.of(userInput).toAbsolutePath());
        directoryCorpus.registerFileDocumentFactory(".json", JsonFileDocument::loadJsonFileDocument);
        directoryCorpus.registerFileDocumentFactory(".txt", TextFileDocument::loadTextFileDocument);
        return directoryCorpus;
