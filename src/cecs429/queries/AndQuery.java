@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.stream.Collectors;
 
 import cecs429.indexing.Index;
@@ -15,7 +14,7 @@ import cecs429.indexing.Posting;
  */
 public class AndQuery implements QueryComponent {
 	private List<QueryComponent> mComponents;
-	
+
 	public AndQuery(List<QueryComponent> components) {
 		mComponents = components;
 	}
@@ -30,6 +29,17 @@ public class AndQuery implements QueryComponent {
 			idx++;
 		}
 		return result;
+	}
+
+	private boolean sign = false;
+	@Override
+	public boolean getSign() {
+		return sign;
+	}
+
+	@Override
+	public void setSign(boolean sign) {
+		this.sign=sign;
 	}
 
 	private static List<Posting> intersect (List<Posting> l1, List<Posting> l2){
@@ -53,8 +63,30 @@ public class AndQuery implements QueryComponent {
 		return result;
 	}
 
-
-	
+	private static List<Posting> notIntersect (List<Posting> l1, List<Posting> l2){
+		List<Posting> result = new ArrayList<>();
+		int l1_idx =0;
+		int l2_idx =0;
+		while (l1_idx<l1.size()&&l2_idx<l2.size()){
+			Posting p1=l1.get(l1_idx);
+			Posting p2=l2.get(l2_idx);
+			if (p1.getDocumentId()== p2.getDocumentId()){
+				l1_idx++;
+				l2_idx++;
+			} else if (p1.getDocumentId()< p2.getDocumentId()){
+				result.add(p1);
+				l1_idx++;
+			}else {
+				l2_idx++;
+			}
+		}
+		while (l1_idx<l1.size()){
+			Posting p1=l1.get(l1_idx);
+			result.add(p1);
+			l1_idx++;
+		}
+		return result;
+	}
 	@Override
 	public String toString() {
 		return

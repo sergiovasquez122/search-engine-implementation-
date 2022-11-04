@@ -42,9 +42,10 @@ public class OrQuery implements QueryComponent {
 				l1_idx++;
 				l2_idx++;
 			} else if (p1.getDocumentId()< p2.getDocumentId()){
-
+				result.add(p1);
 				l1_idx++;
 			}else {
+				result.add(p2);
 				l2_idx++;
 			}
 		}
@@ -59,5 +60,15 @@ public class OrQuery implements QueryComponent {
 		return "(" +
 		 String.join(" + ", mComponents.stream().map(c -> c.toString()).collect(Collectors.toList()))
 		 + " )";
+	}
+	private boolean sign = false;
+	@Override
+	public boolean getSign() {
+		return sign;
+	}
+
+	@Override
+	public void setSign(boolean sign) {
+		this.sign=sign;
 	}
 }

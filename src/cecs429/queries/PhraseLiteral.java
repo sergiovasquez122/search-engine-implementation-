@@ -54,7 +54,7 @@ public class PhraseLiteral implements QueryComponent {
 		int pp2idx=0;
 		while (pp1idx<pp1.size()){
 			while (pp2idx<pp2.size()){
-				if (Math.abs(pp1.get(pp1idx) - pp2.get(pp2idx)) <= k){
+				if (pp2.get(pp2idx) - pp1.get(pp1idx) <= k){
 					l.add(pp2.get(pp2idx));
 				}
 				else if ((pp2.get(pp2idx))>pp1.get(pp1idx)){
@@ -101,5 +101,15 @@ public class PhraseLiteral implements QueryComponent {
 			mTerms.stream()
 			.collect(Collectors.joining(" "));
 		return "\"" + terms + "\"";
+	}
+	private boolean sign = false;
+	@Override
+	public boolean getSign() {
+		return sign;
+	}
+
+	@Override
+	public void setSign(boolean sign) {
+		this.sign=sign;
 	}
 }

@@ -28,7 +28,17 @@ public class TermLiteral implements QueryComponent {
 		List<String> strings=processor.processToken(mTerm);
 		return index.getPostingsWithoutPos(strings.get(strings.size()-1));
 	}
-	
+
+	private boolean sign = false;
+	@Override
+	public boolean getSign() {
+		return sign;
+	}
+
+	@Override
+	public void setSign(boolean sign) {
+		this.sign=sign;
+	}
 	@Override
 	public String toString() {
 		return mTerm;

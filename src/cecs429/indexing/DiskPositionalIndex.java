@@ -26,7 +26,7 @@ public class DiskPositionalIndex implements Index{
         for (int i = 0;i<dft;i++){
             int id=randomAccessFile.readInt();
             Posting posting = new Posting(id+gap);
-            gap=id;
+            gap+=id;
             int tftd = randomAccessFile.readInt();
             int posgap=0;
 

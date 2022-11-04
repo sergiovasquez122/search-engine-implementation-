@@ -28,4 +28,15 @@ public class NearLiteral implements QueryComponent{
 
         return PhraseLiteral.PositionalIntersect(p1,p2,k);
     }
+
+    private boolean sign = false;
+    @Override
+    public boolean getSign() {
+        return sign;
+    }
+
+    @Override
+    public void setSign(boolean sign) {
+        this.sign=sign;
+    }
 }

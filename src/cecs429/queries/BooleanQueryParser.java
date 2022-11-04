@@ -158,7 +158,7 @@ public class BooleanQueryParser {
 				lengthOut = nextBracket - startIndex;
 			}
 			AndQuery query = (AndQuery) parseQuery(subquery.substring(startIndex,startIndex+lengthOut));
-			return new Literal(new StringBounds(startIndex,lengthOut),
+			return new Literal(new StringBounds(startIndex,lengthOut+1),
 					new NearLiteral(query.toString()));
 		}
 
@@ -173,7 +173,7 @@ public class BooleanQueryParser {
 				lengthOut = nextQuote - startIndex;
 			}
 			AndQuery query = (AndQuery) parseQuery(subquery.substring(startIndex,startIndex+lengthOut));
-			return new Literal(new StringBounds(startIndex,lengthOut),
+			return new Literal(new StringBounds(startIndex,lengthOut+1),
 					new PhraseLiteral(query.toString()));
 		}
 		// Locate the next space to find the end of this literal.
