@@ -157,8 +157,9 @@ public class BooleanQueryParser {
 			else {
 				lengthOut = nextBracket - startIndex;
 			}
+			AndQuery query = (AndQuery) parseQuery(subquery.substring(startIndex,startIndex+lengthOut));
 			return new Literal(new StringBounds(startIndex,lengthOut),
-					new NearLiteral(subquery.substring(startIndex, startIndex + lengthOut)));
+					new NearLiteral(query.toString()));
 		}
 
 		if (subquery.charAt(startIndex) == '"'){
@@ -171,8 +172,9 @@ public class BooleanQueryParser {
 			else {
 				lengthOut = nextQuote - startIndex;
 			}
+			AndQuery query = (AndQuery) parseQuery(subquery.substring(startIndex,startIndex+lengthOut));
 			return new Literal(new StringBounds(startIndex,lengthOut),
-					new PhraseLiteral(subquery.substring(startIndex, startIndex + lengthOut)));
+					new PhraseLiteral(query.toString()));
 		}
 		// Locate the next space to find the end of this literal.
 		int nextSpace = subquery.indexOf(' ', startIndex);
