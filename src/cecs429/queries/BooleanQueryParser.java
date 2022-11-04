@@ -150,28 +150,21 @@ public class BooleanQueryParser {
 		if (subquery.charAt(startIndex) == '['){
 			++startIndex;
 			int nextBracket = subquery.indexOf(']',startIndex);
-			if (nextBracket < 0){
-				lengthOut = subLength - startIndex;
-
-			}
-			else {
-				lengthOut = nextBracket - startIndex;
-			}
+			lengthOut = nextBracket - startIndex;
 			AndQuery query = (AndQuery) parseQuery(subquery.substring(startIndex,startIndex+lengthOut));
 			return new Literal(new StringBounds(startIndex,lengthOut+1),
 					new NearLiteral(query.toString()));
 		}
 
+		if (subquery.charAt(startIndex)=='-'){
+			Literal literal=findNextLiteral(subquery,startIndex+1);
+			literal.literalComponent.setSign(true);
+			return literal;
+		}
 		if (subquery.charAt(startIndex) == '"'){
 			++startIndex;
 			int nextQuote = subquery.indexOf('"',startIndex);
-			if (nextQuote < 0){
-				lengthOut = subLength - startIndex;
-
-			}
-			else {
-				lengthOut = nextQuote - startIndex;
-			}
+			lengthOut = nextQuote - startIndex;
 			AndQuery query = (AndQuery) parseQuery(subquery.substring(startIndex,startIndex+lengthOut));
 			return new Literal(new StringBounds(startIndex,lengthOut+1),
 					new PhraseLiteral(query.toString()));

@@ -22,10 +22,22 @@ public class AndQuery implements QueryComponent {
 	@Override
 	public List<Posting> getPostings(Index index) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, SQLException {
 		int idx = 1;
+		QueryComponent q1 = mComponents.get(0);
 		List<Posting> result= mComponents.get(0).getPostings(index);
 		while (idx< mComponents.size() )
 		{
-			result = intersect(result, mComponents.get(idx).getPostings(index));
+			QueryComponent q2 = mComponents.get(idx);
+			List<Posting> l2= mComponents.get(idx).getPostings(index);
+			if (q1.getSign()||q2.getSign()){
+				if (q1.getSign()){
+					result=notIntersect(result,l2);
+					q1.setSign(false);
+				}else {
+					result=notIntersect(l2,result);
+				}
+			}else {
+				result = intersect(result, mComponents.get(idx).getPostings(index));
+			}
 			idx++;
 		}
 		return result;
