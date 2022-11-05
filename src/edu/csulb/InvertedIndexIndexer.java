@@ -191,6 +191,43 @@ private static void displayQueryOption(){
         return userInput;
     }
 
+
+    private static class Pair{
+        public int id;
+        public double score ;
+
+        public Pair(int id, double score) {
+            this.id = id;
+            this.score = score;
+        }
+    }
+
+    private static List<Pair> termAtATime(String query, DiskPositionalIndex index, ScoringStrategy strategy) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, IOException {
+        List<Pair> result = new ArrayList<>();
+        HashMap<Integer,Double> hashMap=new HashMap<>();
+        ComplexTokenProcessor processor = new ComplexTokenProcessor();
+        for (String term: query.split(" ")) {
+            List<String> strings = processor.processToken(term);
+            String word = strings.get(strings.size()-1);
+            double wqt = strategy.queryTermWeight(word);
+            for (Posting p:index.getPostings(word)){
+                double wdt = strategy.docTermWeight(p);
+                double ad = hashMap.getOrDefault(p.getDocumentId(),0.0);
+                ad+=wqt*wdt;
+                hashMap.put(p.getDocumentId(),ad);
+            }
+        }
+
+        PriorityQueue<Pair> pq = new PriorityQueue<>((o1, o2) -> Double.compare(o2.score,o1.score));
+        for (Map.Entry<Integer, Double> es:hashMap.entrySet()){
+            pq.add(new Pair(es.getKey(),es.getValue()));
+        }
+        while (!pq.isEmpty()&&result.size()<10){
+            result.add(pq.poll());
+        }
+        return result;
+    }
+
     private static DirectoryCorpus findCorpus() throws IOException {
         InputStreamReader inp = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(inp);
