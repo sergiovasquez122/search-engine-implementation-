@@ -63,9 +63,33 @@ public class DiskPositionalIndex implements Index{
             for (int j=0;j<tftd;j++){
                 randomAccessFile.readInt();
             }
+            posting.setTftd(tftd);
             result.add(posting);
         }
         return result;
+    }
+
+    public double getEuclideanWeight(int docID) throws IOException {
+        weights.seek(docID* 8L);
+        return weights.readDouble();
+    }
+
+    public double avgTftd(int docID) throws IOException {
+        weights.seek(docID* 8L);
+        return weights.readDouble();
+    }
+
+    public double getDocLength(int docID) throws IOException {
+        weights.seek(docID* 8L);
+        return weights.readDouble();
+    }
+
+    public double getAvgDocLength() throws IOException {
+        return weights.readDouble();
+    }
+
+    public double byteSize(int d) throws IOException {
+        return weights.readDouble();
     }
 
     @Override
@@ -73,10 +97,12 @@ public class DiskPositionalIndex implements Index{
         return null;
     }
 
-    public DiskPositionalIndex(String absoluteFilePath) throws FileNotFoundException, SQLException {
-        randomAccessFile = new RandomAccessFile(absoluteFilePath,"r");
+    public DiskPositionalIndex(String absoluteDirectory) throws FileNotFoundException, SQLException {
+        randomAccessFile = new RandomAccessFile(absoluteDirectory+"\\posting.bin","r");
+        weights = new RandomAccessFile(absoluteDirectory+"\\weights.bin","r");
         connection = DriverManager.getConnection("jdbc:sqlite:terms.sqlite");
     }
 
     private RandomAccessFile randomAccessFile;
+    private RandomAccessFile weights;
 }
