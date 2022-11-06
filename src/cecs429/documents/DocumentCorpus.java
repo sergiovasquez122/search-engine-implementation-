@@ -1,5 +1,7 @@
 package cecs429.documents;
 
+import java.nio.file.Path;
+
 /**
  * Represents a collection of documents used to build an index.
  */
@@ -18,4 +20,5 @@ public interface DocumentCorpus {
 	 * Returns the document with the given document ID.
 	 */
 	Document getDocument(int id);
+	Path getmDirectoryPath();
 }

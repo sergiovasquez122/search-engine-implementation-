@@ -9,11 +9,14 @@ import java.sql.*;
 import java.util.List;
 
 public class DiskIndexWriter {
-    private RandomAccessFile weightsFile = new RandomAccessFile(Paths.get("").toAbsolutePath().toString()+"\\docWeights.bin", "rw");
-    private RandomAccessFile randomAccessFile = new RandomAccessFile(Paths.get("").toAbsolutePath().toString()+"\\posting.bin","rw");
+    private RandomAccessFile weightsFile;
+    private RandomAccessFile randomAccessFile;
+    private String path;
 
-
-    public DiskIndexWriter() throws FileNotFoundException {
+    public DiskIndexWriter(String path ) throws FileNotFoundException {
+        this.path=path;
+        weightsFile=new RandomAccessFile(path+"\\docWeights.bin", "rw");
+        randomAccessFile=new RandomAccessFile(path+"\\posting.bin", "rw");
     }
 
     public void setWeightsFile(int docId, double weight) throws IOException {

@@ -147,7 +147,7 @@ private static void displayQueryOption(){
     private static Index indexCorpus(DocumentCorpus corpus) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, SQLException {
         ComplexTokenProcessor processor = new ComplexTokenProcessor();
         PositionalInvertedIndex invertedIndex = new PositionalInvertedIndex();
-        DiskIndexWriter indexWriter= new DiskIndexWriter();
+        DiskIndexWriter indexWriter= new DiskIndexWriter(corpus.getmDirectoryPath().toAbsolutePath().toString());
         for (Document d : corpus.getDocuments()) {
             HashMap<String, Integer> tftd= new LinkedHashMap<>();
             EnglishTokenStream englishTokenStream = new EnglishTokenStream(d.getContent());
