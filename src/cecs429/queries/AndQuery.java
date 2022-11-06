@@ -30,10 +30,10 @@ public class AndQuery implements QueryComponent {
 			List<Posting> l2= mComponents.get(idx).getPostings(index);
 			if (q1.getSign()||q2.getSign()){
 				if (q1.getSign()){
-					result=notIntersect(result,l2);
+					result=notIntersect(l2,result);
 					q1.setSign(false);
 				}else {
-					result=notIntersect(l2,result);
+					result=notIntersect(result,l2);
 				}
 			}else {
 				result = intersect(result, mComponents.get(idx).getPostings(index));
