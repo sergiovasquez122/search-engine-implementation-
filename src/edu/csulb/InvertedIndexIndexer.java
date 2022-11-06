@@ -30,10 +30,16 @@ public class InvertedIndexIndexer {
         }
         displayQueryOption();
         input = userInput("input: ");
-
+        
         Index index;
             index = new DiskPositionalIndex(corpus.getmDirectoryPath().toAbsolutePath().toString());
             corpus.getDocuments();
+            int mode;
+            ScoringStrategy strategy = null;
+            if (input==2){
+                mode = userInput("1. default or 2. tfidf: ");
+                strategy= scoringStrategyHashMap((DiskPositionalIndex) index,corpus).get(mode);
+            }
         InputStreamReader inp = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(inp);
         String userInput;
@@ -85,7 +91,7 @@ readDocument(corpus.getDocument(idx));
             System.out.print("\n\n\n");
             }
             else if (input==2){
-                List<Pair> results = termAtATime(userInput,index,null);
+                List<Pair> results = termAtATime(userInput,index,strategy);
                 for (Pair p:results){
                     System.out.println("Document " + ": "+ corpus.getDocument(p.id).getTitle());
                     System.out.println("score: "+p.score);
