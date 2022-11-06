@@ -86,6 +86,10 @@ readDocument(corpus.getDocument(idx));
             }
             else if (input==2){
                 List<Pair> results = termAtATime(userInput,index,null);
+                for (Pair p:results){
+                    System.out.println("Document " + ": "+ corpus.getDocument(p.id).getTitle());
+                    System.out.println("score: "+p.score);
+                }
             }
         } while (!userInput.equals(":q"));
     }
@@ -106,6 +110,13 @@ BufferedReader reader = new BufferedReader(document.getContent());
         while ((line = reader.readLine()) != null) {
             System.out.println(line);
         }
+}
+
+private static HashMap<Integer,ScoringStrategy> scoringStrategyHashMap(DiskPositionalIndex index,DirectoryCorpus c){
+    HashMap<Integer,ScoringStrategy> hashMap=new HashMap<>();
+    hashMap.put(1,new DefaultStrategy(index, c.getCorpusSize()));
+    hashMap.put(2,new TfStrategy(index, c.getCorpusSize()));
+    return hashMap;
 }
 private static double euclideanWeight(HashMap<String, Integer> hashMap){
         double ld=0;
