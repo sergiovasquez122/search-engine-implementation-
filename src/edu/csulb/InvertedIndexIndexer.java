@@ -9,6 +9,7 @@ import cecs429.text.EnglishTokenStream;
 import org.tartarus.snowball.SnowballStemmer;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -37,7 +38,7 @@ public class InvertedIndexIndexer {
             int mode;
             ScoringStrategy strategy = null;
             if (input==1){
-                mode = userInput("1. default or 2. tfidf: ");
+                mode = userInput("1. default or 2. tfidf or 3. BM or 4. Wacky: ");
                 strategy= scoringStrategyHashMap((DiskPositionalIndex) index,corpus).get(mode);
             }
         InputStreamReader inp = new InputStreamReader(System.in);
@@ -122,6 +123,8 @@ private static HashMap<Integer,ScoringStrategy> scoringStrategyHashMap(DiskPosit
     HashMap<Integer,ScoringStrategy> hashMap=new HashMap<>();
     hashMap.put(1,new DefaultStrategy(index, c.getCorpusSize()));
     hashMap.put(2,new TfStrategy(index, c.getCorpusSize()));
+    hashMap.put(3, new BMStrategy(index,c.getCorpusSize()));
+    hashMap.put(4, new WackyStrategy(index,c.getCorpusSize()));
     return hashMap;
 }
 private static double euclideanWeight(HashMap<String, Integer> hashMap){
@@ -133,6 +136,14 @@ private static double euclideanWeight(HashMap<String, Integer> hashMap){
         }
         return Math.sqrt(ld);
 }
+    private static double averageTftd(HashMap<String, Integer> hashMap){
+        ArrayList<Integer> docs = new ArrayList<>();
+        for (String k: hashMap.keySet()){
+            int tftd = hashMap.get(k);
+            docs.add(tftd);
+        }
+        return docs.stream().mapToInt(Integer::intValue).average().orElse(0.0);
+    }
 
 private static void displayIndexOptions(){
         System.out.println("1. index corpus");
@@ -148,6 +159,7 @@ private static void displayQueryOption(){
         ComplexTokenProcessor processor = new ComplexTokenProcessor();
         PositionalInvertedIndex invertedIndex = new PositionalInvertedIndex();
         DiskIndexWriter indexWriter= new DiskIndexWriter(corpus.getmDirectoryPath().toAbsolutePath().toString());
+        ArrayList<Integer> docs = new ArrayList<>();
         for (Document d : corpus.getDocuments()) {
             HashMap<String, Integer> tftd= new LinkedHashMap<>();
             EnglishTokenStream englishTokenStream = new EnglishTokenStream(d.getContent());
@@ -167,9 +179,16 @@ private static void displayQueryOption(){
                 }
                 token++;
             }
+            docs.add(token);
+
             double ld = euclideanWeight(tftd);
-            indexWriter.setWeightsFile(d.getId(), ld);
+            indexWriter.setWeightsFile(d.getId(), ld);//euclidean
+            indexWriter.setWeightsFile(d.getId(),token);//doclength
+            indexWriter.setWeightsFile(d.getId(),averageTftd(tftd)); // average tftd
+            indexWriter.setWeightsFile(d.getId(), Files.size(((FileDocument) d).getFilePath()));//byte size
         }
+        double average = docs.stream().mapToInt(val -> val).average().orElse(0.0);
+        indexWriter.setWeightsFile(0,average);// average doclength
         indexWriter.writeIndex(invertedIndex);
         indexWriter.close();
         return invertedIndex;

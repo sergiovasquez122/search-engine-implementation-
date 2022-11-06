@@ -70,25 +70,27 @@ public class DiskPositionalIndex implements Index{
     }
 
     public double getEuclideanWeight(int docID) throws IOException {
-        weights.seek(docID* 8L);
+        weights.seek(docID* 32L);
         return weights.readDouble();
     }
 
     public double avgTftd(int docID) throws IOException {
-        weights.seek(docID* 8L);
+        weights.seek(docID* 32L+16);
         return weights.readDouble();
     }
 
     public double getDocLength(int docID) throws IOException {
-        weights.seek(docID* 8L);
+        weights.seek(docID* 32L+8);
         return weights.readDouble();
     }
 
     public double getAvgDocLength() throws IOException {
+        weights.seek(weights.length()-8);
         return weights.readDouble();
     }
 
     public double byteSize(int d) throws IOException {
+        weights.seek(d * 32L+24);
         return weights.readDouble();
     }
 
