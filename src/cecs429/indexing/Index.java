@@ -16,6 +16,14 @@ public interface Index {
 
 	List<Posting> getPostingsWithoutPos(String term) throws IOException, SQLException;
 
+	double getEuclideanWeight(int docID) throws IOException ;
+	double avgTftd(int docID) throws IOException;
+
+	double getDocLength(int docID) throws IOException;
+
+	double getAvgDocLength() throws IOException;
+
+	double byteSize(int d) throws IOException;
 	/**
 	 * A sorted list of all terms in the index vocabulary.
 	 */

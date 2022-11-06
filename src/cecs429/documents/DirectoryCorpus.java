@@ -25,7 +25,11 @@ public class DirectoryCorpus implements DocumentCorpus {
 	private Predicate<String> mFileFilter;
 	
 	private Path mDirectoryPath;
-	
+
+	public Path getmDirectoryPath() {
+		return mDirectoryPath;
+	}
+
 	/**
 	 * Constructs a corpus over an absolute directory path.
 	 * Before calling GetDocuments(), you must register a FileDocumentFactory with the RegisterFileDocumentFactory

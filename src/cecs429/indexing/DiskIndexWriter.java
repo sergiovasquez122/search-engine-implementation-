@@ -12,6 +12,7 @@ public class DiskIndexWriter {
     private RandomAccessFile weightsFile = new RandomAccessFile(Paths.get("").toAbsolutePath().toString()+"\\docWeights.bin", "rw");
     private RandomAccessFile randomAccessFile = new RandomAccessFile(Paths.get("").toAbsolutePath().toString()+"\\posting.bin","rw");
 
+
     public DiskIndexWriter() throws FileNotFoundException {
     }
 

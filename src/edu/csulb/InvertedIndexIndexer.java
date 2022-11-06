@@ -32,8 +32,7 @@ public class InvertedIndexIndexer {
         input = userInput("input: ");
 
         Index index;
-            String file = findFile();
-            index = new DiskPositionalIndex(file);
+            index = new DiskPositionalIndex(corpus.getmDirectoryPath().toAbsolutePath().toString());
             corpus.getDocuments();
         InputStreamReader inp = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(inp);
@@ -62,7 +61,7 @@ public class InvertedIndexIndexer {
                     System.out.println(Stem(strings[1]));
                 }
             }
-            else {
+            else if (input==1){
                 QueryComponent component= parser.parseQuery(userInput);
                 Instant start = Instant.now();
                 List<Posting> postings = component.getPostings(index);
@@ -83,7 +82,11 @@ public class InvertedIndexIndexer {
 readDocument(corpus.getDocument(idx));
                     }
                 }
-            System.out.print("\n\n\n");}
+            System.out.print("\n\n\n");
+            }
+            else if (input==2){
+                List<Pair> results = termAtATime(userInput,index,null);
+            }
         } while (!userInput.equals(":q"));
     }
 
@@ -202,7 +205,7 @@ private static void displayQueryOption(){
         }
     }
 
-    private static List<Pair> termAtATime(String query, DiskPositionalIndex index, ScoringStrategy strategy) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, IOException {
+    private static List<Pair> termAtATime(String query, Index index, ScoringStrategy strategy) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, IOException {
         List<Pair> result = new ArrayList<>();
         HashMap<Integer,Double> hashMap=new HashMap<>();
         ComplexTokenProcessor processor = new ComplexTokenProcessor();

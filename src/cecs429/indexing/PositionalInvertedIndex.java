@@ -24,6 +24,31 @@ public class PositionalInvertedIndex implements Index{
     }
 
     @Override
+    public double getEuclideanWeight(int docID) throws IOException {
+        return 0;
+    }
+
+    @Override
+    public double avgTftd(int docID) throws IOException {
+        return 0;
+    }
+
+    @Override
+    public double getDocLength(int docID) throws IOException {
+        return 0;
+    }
+
+    @Override
+    public double getAvgDocLength() throws IOException {
+        return 0;
+    }
+
+    @Override
+    public double byteSize(int d) throws IOException {
+        return 0;
+    }
+
+    @Override
     public List<String> getVocabulary() {
         List<String> keys = new ArrayList<>(termToDocID.keySet());
         Collections.sort(keys);
