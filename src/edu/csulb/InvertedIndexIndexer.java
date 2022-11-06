@@ -36,7 +36,7 @@ public class InvertedIndexIndexer {
             corpus.getDocuments();
             int mode;
             ScoringStrategy strategy = null;
-            if (input==2){
+            if (input==1){
                 mode = userInput("1. default or 2. tfidf: ");
                 strategy= scoringStrategyHashMap((DiskPositionalIndex) index,corpus).get(mode);
             }
@@ -67,7 +67,7 @@ public class InvertedIndexIndexer {
                     System.out.println(Stem(strings[1]));
                 }
             }
-            else if (input==1){
+            else if (input==2){
                 QueryComponent component= parser.parseQuery(userInput);
                 Instant start = Instant.now();
                 List<Posting> postings = component.getPostings(index);
@@ -90,11 +90,11 @@ readDocument(corpus.getDocument(idx));
                 }
             System.out.print("\n\n\n");
             }
-            else if (input==2){
+            else if (input==1){
                 List<Pair> results = termAtATime(userInput,index,strategy);
                 for (Pair p:results){
-                    System.out.println("Document " + ": "+ corpus.getDocument(p.id).getTitle());
-                    System.out.println("score: "+p.score);
+                    System.out.print("Document " + ": "+ corpus.getDocument(p.id).getTitle());
+                    System.out.println(" score: "+p.score);
                 }
             }
         } while (!userInput.equals(":q"));
@@ -240,7 +240,9 @@ private static void displayQueryOption(){
 
         PriorityQueue<Pair> pq = new PriorityQueue<>((o1, o2) -> Double.compare(o2.score,o1.score));
         for (Map.Entry<Integer, Double> es:hashMap.entrySet()){
-            pq.add(new Pair(es.getKey(),es.getValue()));
+            if (es.getValue()!=0) {
+                pq.add(new Pair(es.getKey(), es.getValue() / strategy.getLength(es.getKey())));
+            }
         }
         while (!pq.isEmpty()&&result.size()<10){
             result.add(pq.poll());
