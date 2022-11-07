@@ -23,7 +23,7 @@ public class WackyStrategy implements ScoringStrategy{
     @Override
     public double queryTermWeight(String term) throws SQLException, IOException {
         List<Posting> postings= index.getPostings(term);
-        return Math.max(0,Math.log((N- postings.size()))/ postings.size());
+        return Math.max(0,Math.log((N- postings.size())*1.0/ postings.size()));
     }
 
     @Override
