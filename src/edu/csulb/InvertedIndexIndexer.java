@@ -92,10 +92,21 @@ readDocument(corpus.getDocument(idx));
             System.out.print("\n\n\n");
             }
             else if (input==1){
-                List<Pair> results = termAtATime(userInput,index,strategy);
-                for (Pair p:results){
-                    System.out.print("Document " + ": "+ corpus.getDocument(p.id).getTitle());
+                List<Pair> postings= termAtATime(userInput,index,strategy);
+                for (int i=0;i<postings.size();i++){
+                    Pair p = postings.get(i);
+                    System.out.print("Document " + i + ": "+ corpus.getDocument(p.id).getTitle());
                     System.out.println(" score: "+p.score);
+                }
+                System.out.println(postings.size());
+                if (!postings.isEmpty()) {
+                    System.out.print("Enter docid to view or -1 to skip: ");
+                    userInput = br.readLine();
+                    trimmed = userInput.trim();
+                    int idx = Integer.parseInt(trimmed);
+                    if (idx != -1) {
+                        readDocument(corpus.getDocument(idx));
+                    }
                 }
             }
         } while (!userInput.equals(":q"));
