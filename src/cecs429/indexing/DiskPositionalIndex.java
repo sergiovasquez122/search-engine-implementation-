@@ -95,8 +95,15 @@ public class DiskPositionalIndex implements Index{
     }
 
     @Override
-    public List<String> getVocabulary() {
-        return null;
+    public List<String> getVocabulary() throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("select * from terms");
+        statement.setQueryTimeout(30);  // set timeout to 30 sec.
+        List<String> result = new ArrayList<>();
+        ResultSet resultSet= statement.executeQuery();
+        while (resultSet.next()){
+            result.add(resultSet.getString("term"));
+        }
+        return result;
     }
 
     public DiskPositionalIndex(String absoluteDirectory) throws FileNotFoundException, SQLException {

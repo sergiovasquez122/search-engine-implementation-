@@ -27,5 +27,5 @@ public interface Index {
 	/**
 	 * A sorted list of all terms in the index vocabulary.
 	 */
-	List<String> getVocabulary();
+	List<String> getVocabulary() throws SQLException;
 }
