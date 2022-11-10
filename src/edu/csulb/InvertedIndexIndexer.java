@@ -214,7 +214,7 @@ private static void displayQueryOption(){
         }
         return findCorpus();
     }
-    private static void Vocab(Index index){
+    private static void Vocab(Index index) throws SQLException {
         List<String> terms = index.getVocabulary();
         for (int i=0;i<1000;i++){
             System.out.println(terms.get(i));
