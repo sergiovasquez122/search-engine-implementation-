@@ -230,18 +230,6 @@ private static void displayQueryOption(){
         return stemmer.getCurrent();
     }
     
-    private static String findFile() throws IOException {
-        InputStreamReader inp = new InputStreamReader(System.in);
-        BufferedReader br = new BufferedReader(inp);
-        String userInput;
-        do {
-            System.out.print("Enter path: ");
-            userInput = br.readLine();
-        } while (!isValidPath(userInput));
-        return userInput;
-    }
-
-
     private static class Pair{
         public int id;
         public double score ;
