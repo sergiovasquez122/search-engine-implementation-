@@ -262,7 +262,7 @@ private static void displayQueryOption(){
                 pq.add(new Pair(es.getKey(), es.getValue() / strategy.getLength(es.getKey())));
             }
         }
-        while (!pq.isEmpty()&&result.size()<10){
+        while (!pq.isEmpty()){
             result.add(pq.poll());
         }
         return result;
