@@ -88,7 +88,7 @@ public class DirectoryCorpus implements DocumentCorpus {
 			public FileVisitResult visitFile(Path file,
 			                                 BasicFileAttributes attrs) {
 				String extension = getFileExtension(file);
-				if (mFileFilter.test(file.toString()) && mFactories.containsKey(extension)) {
+				if (mFileFilter.test(file.toAbsolutePath().toString()) && mFactories.containsKey(extension)) {
 					allFiles.add(file);
 				}
 				return FileVisitResult.CONTINUE;
