@@ -109,7 +109,7 @@ public class DiskPositionalIndex implements Index{
     public DiskPositionalIndex(String absoluteDirectory) throws FileNotFoundException, SQLException {
         randomAccessFile = new RandomAccessFile(absoluteDirectory+"\\posting.bin","r");
         weights = new RandomAccessFile(absoluteDirectory+"\\docWeights.bin","r");
-        connection = DriverManager.getConnection("jdbc:sqlite:terms.sqlite");
+        connection = DriverManager.getConnection("jdbc:sqlite:"+absoluteDirectory+"\\terms.sqlite");
     }
 
     private RandomAccessFile randomAccessFile;

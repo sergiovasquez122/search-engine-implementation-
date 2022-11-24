@@ -30,7 +30,12 @@ public class DiskIndexWriter {
 
     public void writeIndex(PositionalInvertedIndex index) throws IOException, SQLException {
         List<String> vocabulary = index.getVocabulary();
-        Connection connection = DriverManager.getConnection("jdbc:sqlite:terms.sqlite");
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:"+path+"\\"+"terms.sqlite");
+        Statement s = connection.createStatement();
+        s.setQueryTimeout(30);
+        s.executeUpdate("drop table if exists terms");
+        s.executeUpdate("create table terms (term string, pos integer)");
+
         PreparedStatement statement = connection.prepareStatement("insert into terms values(?,?) on conflict do nothing");
         statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
