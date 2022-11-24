@@ -17,7 +17,8 @@ import java.util.function.Predicate;
 public class DirectoryCorpus implements DocumentCorpus {
 	// The map from document ID to document.
 	private HashMap<Integer, Document> mDocuments;
-	
+
+	private HashMap<Integer, String> id2Class = new HashMap<>();
 	// Maintains a map of registered file types that the corpus knows how to load.
 	private HashMap<String, FileDocumentFactory> mFactories = new HashMap<>();
 	
@@ -62,6 +63,7 @@ public class DirectoryCorpus implements DocumentCorpus {
 		for (Path file : allFiles) {
 			// Use the registered factory for the file's extension.
 			result.put(nextId, mFactories.get(getFileExtension(file)).createFileDocument(file, nextId));
+			id2Class.put(nextId, file.toFile().getParentFile().getName());
 			nextId++;
 		}
 		return result;
@@ -78,11 +80,7 @@ public class DirectoryCorpus implements DocumentCorpus {
 			
 			public FileVisitResult preVisitDirectory(Path dir,
 			                                         BasicFileAttributes attrs) {
-				// make sure we only process the current working directory
-				if (mDirectoryPath.equals(dir)) {
 					return FileVisitResult.CONTINUE;
-				}
-				return FileVisitResult.SKIP_SUBTREE;
 			}
 			
 			public FileVisitResult visitFile(Path file,
@@ -121,7 +119,7 @@ public class DirectoryCorpus implements DocumentCorpus {
 		}
 		return mDocuments.values();
 	}
-	
+
 	@Override
 	public int getCorpusSize() {
 		if (mDocuments == null) {
@@ -137,6 +135,10 @@ public class DirectoryCorpus implements DocumentCorpus {
 	@Override
 	public Document getDocument(int id) {
 		return mDocuments.get(id);
+	}
+
+	public String getClass(int id){
+		return id2Class.get(id);
 	}
 	
 	/**

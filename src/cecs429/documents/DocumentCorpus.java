@@ -15,7 +15,9 @@ public interface DocumentCorpus {
 	 * The number of documents in the corpus.
 	 */
 	int getCorpusSize();
-	
+
+	String getClass(int id);
+
 	/**
 	 * Returns the document with the given document ID.
 	 */

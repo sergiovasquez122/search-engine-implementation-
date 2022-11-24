@@ -15,12 +15,23 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class InvertedIndexIndexer {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         displayIndexOptions();
         int input = userInput("input: ");
-        DirectoryCorpus corpus = findCorpus();
+        if (input==3){
+
+            DirectoryCorpus corpus = findCorpus(true);
+            Instant start = Instant.now();
+            Index index = indexCorpus(corpus);
+            Instant end = Instant.now();
+            Duration timeElapsed = Duration.between(start, end);
+            System.out.println("Time taken: "+ timeElapsed.toSeconds() +" seconds");
+            System.exit(0);
+        }
+        DirectoryCorpus corpus = findCorpus(false);
         if (input==1){
             Instant start = Instant.now();
             Index index = indexCorpus(corpus);
@@ -159,6 +170,7 @@ private static double euclideanWeight(HashMap<String, Integer> hashMap){
 private static void displayIndexOptions(){
         System.out.println("1. index corpus");
     System.out.println("2. query corpus");
+    System.out.println("3. knn");
 }
 
 private static void displayQueryOption(){
@@ -212,7 +224,7 @@ private static void displayQueryOption(){
             directoryCorpus.registerFileDocumentFactory(".txt", TextFileDocument::loadTextFileDocument);
             return directoryCorpus;
         }
-        return findCorpus();
+        return findCorpus(false);
     }
     private static void Vocab(Index index) throws SQLException {
         List<String> terms = index.getVocabulary();
@@ -268,7 +280,7 @@ private static void displayQueryOption(){
         return result;
     }
 
-    private static DirectoryCorpus findCorpus() throws IOException {
+    private static DirectoryCorpus findCorpus(boolean exclude) throws IOException {
         InputStreamReader inp = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(inp);
         String userInput;
@@ -276,6 +288,19 @@ private static void displayQueryOption(){
             System.out.print("Enter path: ");
             userInput = br.readLine();
         } while (!isValidPath(userInput));
+        if (exclude){
+            String input;
+            do {
+                System.out.print("Enter path: ");
+                input= br.readLine();
+            } while (!isValidPath(input));
+
+            String finalInput = input;
+            DirectoryCorpus directoryCorpus = new DirectoryCorpus(Path.of(userInput).toAbsolutePath(), s -> !s.contains(finalInput));
+            directoryCorpus.registerFileDocumentFactory(".json", JsonFileDocument::loadJsonFileDocument);
+            directoryCorpus.registerFileDocumentFactory(".txt", TextFileDocument::loadTextFileDocument);
+            return directoryCorpus;
+        }
        DirectoryCorpus directoryCorpus = new DirectoryCorpus(Path.of(userInput).toAbsolutePath());
        directoryCorpus.registerFileDocumentFactory(".json", JsonFileDocument::loadJsonFileDocument);
        directoryCorpus.registerFileDocumentFactory(".txt", TextFileDocument::loadTextFileDocument);
