@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DiskPositionalIndex implements Index{
@@ -103,6 +104,7 @@ public class DiskPositionalIndex implements Index{
         while (resultSet.next()){
             result.add(resultSet.getString("term"));
         }
+        Collections.sort(result);
         return result;
     }
 
