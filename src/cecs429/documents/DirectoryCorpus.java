@@ -120,6 +120,10 @@ public class DirectoryCorpus implements DocumentCorpus {
 		return mDocuments.values();
 	}
 
+	public Iterable<String> getClasses(){
+		return id2Class.values();
+	}
+
 	@Override
 	public int getCorpusSize() {
 		if (mDocuments == null) {

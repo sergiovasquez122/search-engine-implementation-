@@ -217,6 +217,20 @@ private static void displayQueryOption(){
         return invertedIndex;
     }
 
+    private static String findClass(DirectoryCorpus directoryCorpus, List<Pair> list){
+        HashMap<String,Double> hm = new HashMap<>();
+        for (String c : directoryCorpus.getClasses()){
+            hm.put(c,0.0);
+        }
+        for (Pair p :list){
+            double score = hm.getOrDefault(directoryCorpus.getClass(p.id),0.0);
+            score+=p.score;
+            hm.put(directoryCorpus.getClass(p.id),score);
+        }
+        return hm.entrySet().stream().max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
+
+    }
+
     private static DirectoryCorpus IndexFromFile(String string) throws IOException {
         if (isValidPath(string)){
                     DirectoryCorpus directoryCorpus = new DirectoryCorpus(Path.of(string));
