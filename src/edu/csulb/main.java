@@ -65,7 +65,10 @@ public class main {
         for (Map.Entry<Integer,SparseIndexedVector> es:testvec.entrySet()){
             List<Pair> nn = nearestNeighbors(id2vec, es.getValue());
             System.out.println(corpus2.getDocument(es.getKey()).getTitle());
-            System.out.println(findClass(corpus1,nn.subList(0,3)));
+            for (Pair p: nn.subList(0,5)){
+                System.out.println(corpus1.getDocument(p.id).getTitle() +" ("+p.score+")");
+            }
+            System.out.println(findClass(corpus1,nn.subList(0,5)));
         }
     }
 
