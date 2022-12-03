@@ -19,6 +19,7 @@ public class DirectoryCorpus implements DocumentCorpus {
 	private HashMap<Integer, Document> mDocuments;
 
 	private HashMap<Integer, String> id2Class = new HashMap<>();
+	private HashMap<String,String> title2class = new HashMap<>();
 	// Maintains a map of registered file types that the corpus knows how to load.
 	private HashMap<String, FileDocumentFactory> mFactories = new HashMap<>();
 	
@@ -64,6 +65,7 @@ public class DirectoryCorpus implements DocumentCorpus {
 			// Use the registered factory for the file's extension.
 			result.put(nextId, mFactories.get(getFileExtension(file)).createFileDocument(file, nextId));
 			id2Class.put(nextId, file.toFile().getParentFile().getName());
+			title2class.put(result.get(nextId).getTitle(),file.toFile().getParentFile().getName());
 			nextId++;
 		}
 		return result;
@@ -144,7 +146,10 @@ public class DirectoryCorpus implements DocumentCorpus {
 	public String getClass(int id){
 		return id2Class.get(id);
 	}
-	
+
+	public String getClass(String title){
+		return title2class.get(title);
+	}
 	/**
 	 * Registers a factory method for loading documents of the given file extension. By default, a corpus
 	 * does not know how to load any files -- this method must be called prior to getDocuments().

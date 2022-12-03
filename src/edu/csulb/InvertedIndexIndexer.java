@@ -256,7 +256,7 @@ private static void displayQueryOption(){
         return stemmer.getCurrent();
     }
     
-    private static class Pair{
+    static class Pair{
         public int id;
         public double score ;
 
