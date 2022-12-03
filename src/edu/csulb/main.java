@@ -65,10 +65,10 @@ public class main {
         for (Map.Entry<Integer,SparseIndexedVector> es:testvec.entrySet()){
             List<Pair> nn = nearestNeighbors(id2vec, es.getValue());
             System.out.println(corpus2.getDocument(es.getKey()).getTitle());
-            for (Pair p: nn.subList(0,5)){
+            for (Pair p: nn.subList(0,3)){
                 System.out.println(corpus1.getDocument(p.id).getTitle() +" ("+p.score+")");
             }
-            System.out.println(findClass(corpus1,nn.subList(0,5)));
+            System.out.println(findClass(corpus1,nn.subList(0,3)));
         }
     }
 
@@ -99,7 +99,7 @@ public class main {
             }
             for (String w : termid.keySet()){
                 for (Posting p: index.getPostings(w)){
-                    id2vec.get(p.getDocumentId()).addAt(termid.get(w), p.getTftd()*defaultStrategy.docTermWeight(p));
+                    id2vec.get(p.getDocumentId()).addAt(termid.get(w),defaultStrategy.docTermWeight(p));
                 }
             }
             for (Map.Entry<Integer,SparseIndexedVector> es:id2vec.entrySet()){
