@@ -178,7 +178,7 @@ private static void displayQueryOption(){
     System.out.println("2. boolean retrieval");
 
 }
-    private static Index indexCorpus(DocumentCorpus corpus) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, SQLException {
+    public static Index indexCorpus(DocumentCorpus corpus) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, SQLException {
         ComplexTokenProcessor processor = new ComplexTokenProcessor();
         PositionalInvertedIndex invertedIndex = new PositionalInvertedIndex();
         DiskIndexWriter indexWriter= new DiskIndexWriter(corpus.getmDirectoryPath().toAbsolutePath().toString());

@@ -2,25 +2,14 @@ package edu.csulb;
 
 import cecs429.documents.*;
 import cecs429.indexing.*;
-import cecs429.queries.BooleanQueryParser;
-import cecs429.queries.QueryComponent;
-import cecs429.text.ComplexTokenProcessor;
-import cecs429.text.EnglishTokenStream;
 import mikera.vectorz.impl.SparseIndexedVector;
-import org.tartarus.snowball.SnowballStemmer;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 
 public class main {
@@ -47,28 +36,37 @@ public class main {
 //            DiskPositionalIndex text = new DiskPositionalIndex(corpus2.getmDirectoryPath().toString());
 //
 //
+
         DirectoryCorpus corpus1 = IndexFromFile(args[0],args[4]);
         DirectoryCorpus corpus2 = IndexFromFile(args[4],"");
         corpus1.getDocuments();
         corpus2.getDocuments();
+        InvertedIndexIndexer.indexCorpus(corpus1);
+        InvertedIndexIndexer.indexCorpus(corpus2);
         DiskPositionalIndex index= new DiskPositionalIndex(corpus1.getmDirectoryPath().toString());
         DiskPositionalIndex index2= new DiskPositionalIndex(corpus2.getmDirectoryPath().toString());
         List<String> words =index.getVocabulary();
+        words.addAll(index2.getVocabulary());
+        Collections.sort(words);
         HashMap<String,Integer> termid = new HashMap<>();
         int id=0;
         for (String w : words){
-            termid.put(w,id++);
+            System.out.println(w);
+            if (!termid.containsKey(w)) {
+                termid.put(w, id++);
+            }
         }
         HashMap<Integer, SparseIndexedVector> id2vec = vecFromDoc(termid,index, corpus1.getCorpusSize());
         HashMap<Integer, SparseIndexedVector> testvec = vecFromDoc(termid,index2, corpus2.getCorpusSize());
-
+        int k = 5;
         for (Map.Entry<Integer,SparseIndexedVector> es:testvec.entrySet()){
             List<Pair> nn = nearestNeighbors(id2vec, es.getValue());
             System.out.println(corpus2.getDocument(es.getKey()).getTitle());
-            for (Pair p: nn.subList(0,3)){
+            for (Pair p: nn.subList(0,k)){
                 System.out.println(corpus1.getDocument(p.id).getTitle() +" ("+p.score+")");
             }
-            System.out.println(findClass(corpus1,nn.subList(0,3)));
+            System.out.println(findClass(corpus1,nn.subList(0,k)));
+            System.out.println(es.getValue().subVector(0,11));
         }
     }
 
@@ -138,66 +136,9 @@ public class main {
         return userInput;
     }
 
-    private static double euclideanWeight(HashMap<String, Integer> hashMap){
-        double ld=0;
-        for (String k: hashMap.keySet()){
-            int tftd = hashMap.get(k);
-            double w = 1 + Math.log(tftd);
-            ld+=w*w;
-        }
-        return Math.sqrt(ld);
-    }
-    private static double averageTftd(HashMap<String, Integer> hashMap){
-        ArrayList<Integer> docs = new ArrayList<>();
-        for (String k: hashMap.keySet()){
-            int tftd = hashMap.get(k);
-            docs.add(tftd);
-        }
-        return docs.stream().mapToInt(Integer::intValue).average().orElse(0.0);
-    }
-
     private static void displayIndexOptions(){
         System.out.println("1. index corpus");
         System.out.println("2. knn");
-    }
-
-    private static Index indexCorpus(DocumentCorpus corpus) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException, SQLException {
-        ComplexTokenProcessor processor = new ComplexTokenProcessor();
-        PositionalInvertedIndex invertedIndex = new PositionalInvertedIndex();
-        DiskIndexWriter indexWriter= new DiskIndexWriter(corpus.getmDirectoryPath().toAbsolutePath().toString());
-        ArrayList<Integer> docs = new ArrayList<>();
-        for (Document d : corpus.getDocuments()) {
-            HashMap<String, Integer> tftd= new LinkedHashMap<>();
-            EnglishTokenStream englishTokenStream = new EnglishTokenStream(d.getContent());
-            int token = 1;
-            for (String word : englishTokenStream.getTokens()) {
-                List<String> strings=processor.processToken(word);
-                for (String processedWord : strings) {
-                    if (processedWord.trim().isEmpty()){
-                        continue;
-                    }
-                    if (!tftd.containsKey(processedWord)){
-                        tftd.put(processedWord, 1);
-                    } else {
-                        tftd.put(processedWord, tftd.get(processedWord)+1);
-                    }
-                    invertedIndex.addTerm(processedWord, d.getId(), token);
-                }
-                token++;
-            }
-            docs.add(token);
-
-            double ld = euclideanWeight(tftd);
-            indexWriter.setWeightsFile(d.getId(), ld);//euclidean
-            indexWriter.setWeightsFile(d.getId(),token);//doclength
-            indexWriter.setWeightsFile(d.getId(),averageTftd(tftd)); // average tftd
-            indexWriter.setWeightsFile(d.getId(), Files.size(((FileDocument) d).getFilePath()));//byte size
-        }
-        double average = docs.stream().mapToInt(val -> val).average().orElse(0.0);
-        indexWriter.setWeightsFile(0,average);// average doclength
-        indexWriter.writeIndex(invertedIndex);
-        indexWriter.close();
-        return invertedIndex;
     }
 
     private static String findClass(DirectoryCorpus directoryCorpus, List<Pair> list){

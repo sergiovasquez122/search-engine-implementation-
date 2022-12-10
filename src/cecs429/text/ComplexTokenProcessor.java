@@ -13,11 +13,12 @@ public class ComplexTokenProcessor implements TokenProcessor {
     @Override
     public List<String> processToken(String token) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         List<String> result = new ArrayList<>();
-        token = token.replaceAll("^[\\W_]|[\\W_]$","");
-        token = token.replaceAll("\"'","");
+        //token = token.replaceAll("^[\\W_]+|[\\W_]+$","");
+        token = token.replaceAll("^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$", "");
+        token = token.replaceAll("[\"']+","");
         if (token.contains("-")){
                String[] tokens = token.toLowerCase().split("-");
-               token = token.replaceAll("-","").toLowerCase();
+               token = token.replaceAll("-+","").toLowerCase();
                List<String> strings= new ArrayList<>(Arrays.asList(tokens));
                strings.add(token);
             Class stemClass = Class.forName("org.tartarus.snowball.ext." + "englishStemmer");
