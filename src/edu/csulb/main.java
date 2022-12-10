@@ -51,14 +51,13 @@ public class main {
         HashMap<String,Integer> termid = new HashMap<>();
         int id=0;
         for (String w : words){
-            System.out.println(w);
             if (!termid.containsKey(w)) {
                 termid.put(w, id++);
             }
         }
         HashMap<Integer, SparseIndexedVector> id2vec = vecFromDoc(termid,index, corpus1.getCorpusSize());
         HashMap<Integer, SparseIndexedVector> testvec = vecFromDoc(termid,index2, corpus2.getCorpusSize());
-        int k = 5;
+        int k = 3;
         for (Map.Entry<Integer,SparseIndexedVector> es:testvec.entrySet()){
             List<Pair> nn = nearestNeighbors(id2vec, es.getValue());
             System.out.println(corpus2.getDocument(es.getKey()).getTitle());
@@ -66,21 +65,22 @@ public class main {
                 System.out.println(corpus1.getDocument(p.id).getTitle() +" ("+p.score+")");
             }
             System.out.println(findClass(corpus1,nn.subList(0,k)));
-            System.out.println(es.getValue().subVector(0,11));
         }
     }
 
     public static List<Pair> nearestNeighbors(HashMap<Integer, SparseIndexedVector> id2vec,SparseIndexedVector test){
             List<Pair> result = new ArrayList<>();
             HashMap<Integer,Double> hashMap=new HashMap<>();
+            HashMap<Integer,Double> cosines=new HashMap<>();
             for (Map.Entry<Integer,SparseIndexedVector> es:id2vec.entrySet()){
                 hashMap.put(es.getKey(), es.getValue().distance(test));
+                cosines.put(es.getKey(), es.getValue().dotProduct(test));
             }
 
             PriorityQueue<Pair> pq = new PriorityQueue<>(Comparator.comparingDouble(o -> o.score));
             for (Map.Entry<Integer, Double> es:hashMap.entrySet()){
                 if (es.getValue()!=0) {
-                    pq.add(new Pair(es.getKey(), es.getValue() ));
+                    pq.add(new Pair(es.getKey(), es.getValue() ,cosines.get(es.getKey())));
                 }
             }
             while (!pq.isEmpty()){
@@ -109,10 +109,12 @@ public class main {
     static class Pair{
         public int id;
         public double score ;
+        public double angle;
 
-        public Pair(int id, double score) {
+        public Pair(int id, double score, double angle) {
             this.id = id;
             this.score = score;
+            this.angle = angle;
         }
     }
 
@@ -148,7 +150,7 @@ public class main {
         }
         for (Pair p :list){
             double score = hm.getOrDefault(directoryCorpus.getClass(p.id),0.0);
-            score+=1;
+            score+=p.angle;
             hm.put(directoryCorpus.getClass(p.id),score);
         }
         return hm.entrySet().stream().max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
