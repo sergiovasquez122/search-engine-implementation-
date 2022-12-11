@@ -28,13 +28,11 @@ public class main {
             DiskPositionalIndex index2 = new DiskPositionalIndex(corpus2.getmDirectoryPath().toString());
             List<String> words = index.getVocabulary();
             words.addAll(index2.getVocabulary());
-            Collections.sort(words);
+            Set<String> sorted = new TreeSet<>(words);
             HashMap<String, Integer> termid = new HashMap<>();
             int id = 0;
-            for (String w : words) {
-                if (!termid.containsKey(w)) {
+            for (String w : sorted) {
                     termid.put(w, id++);
-                }
             }
             HashMap<Integer, SparseIndexedVector> id2vec = vecFromDoc(termid, index, corpus1.getCorpusSize());
             HashMap<Integer, SparseIndexedVector> testvec = vecFromDoc(termid, index2, corpus2.getCorpusSize());
