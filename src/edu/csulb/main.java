@@ -14,58 +14,41 @@ import java.util.*;
 
 public class main {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
-//        displayIndexOptions();
-//        int input = userInput("input: ");
-//        if (input==1){
-//            String mainPath = getString("enter training set path: ");
-//            String testPath = getString("enter test set path: ");
-//            DirectoryCorpus corpus1 = IndexFromFile(mainPath,testPath);
-//            Index index = indexCorpus(corpus1);
-//            DirectoryCorpus corpus2 = IndexFromFile(testPath,"");
-//            Index index2 = indexCorpus(corpus2);
-//            System.exit(0);
-//        }
-//        if (input==2) {
-//            String mainPath = getString("enter training set path: ");
-//            String testPath = getString("enter test set path: ");
-//            DirectoryCorpus corpus1 = IndexFromFile(mainPath, testPath);
-//            DirectoryCorpus corpus2 = IndexFromFile(testPath, "");
-//            corpus1.getDocuments();
-//            corpus2.getDocuments();
-//            DiskPositionalIndex main = new DiskPositionalIndex(corpus1.getmDirectoryPath().toString());
-//            DiskPositionalIndex text = new DiskPositionalIndex(corpus2.getmDirectoryPath().toString());
-//
-//
+        int input = Integer.parseInt(args[0]);
 
-        DirectoryCorpus corpus1 = IndexFromFile(args[0],args[4]);
-        DirectoryCorpus corpus2 = IndexFromFile(args[4],"");
+        DirectoryCorpus corpus1 = IndexFromFile(args[2],args[3]);
+        DirectoryCorpus corpus2 = IndexFromFile(args[3],"");
         corpus1.getDocuments();
         corpus2.getDocuments();
-        InvertedIndexIndexer.indexCorpus(corpus1);
-        InvertedIndexIndexer.indexCorpus(corpus2);
-        DiskPositionalIndex index= new DiskPositionalIndex(corpus1.getmDirectoryPath().toString());
-        DiskPositionalIndex index2= new DiskPositionalIndex(corpus2.getmDirectoryPath().toString());
-        List<String> words =index.getVocabulary();
-        words.addAll(index2.getVocabulary());
-        Collections.sort(words);
-        HashMap<String,Integer> termid = new HashMap<>();
-        int id=0;
-        for (String w : words){
-            if (!termid.containsKey(w)) {
-                termid.put(w, id++);
+        if (input==1){
+            InvertedIndexIndexer.indexCorpus(corpus1);
+            InvertedIndexIndexer.indexCorpus(corpus2);
+        }else if (input==2) {
+            DiskPositionalIndex index = new DiskPositionalIndex(corpus1.getmDirectoryPath().toString());
+            DiskPositionalIndex index2 = new DiskPositionalIndex(corpus2.getmDirectoryPath().toString());
+            List<String> words = index.getVocabulary();
+            words.addAll(index2.getVocabulary());
+            Collections.sort(words);
+            HashMap<String, Integer> termid = new HashMap<>();
+            int id = 0;
+            for (String w : words) {
+                if (!termid.containsKey(w)) {
+                    termid.put(w, id++);
+                }
+            }
+            HashMap<Integer, SparseIndexedVector> id2vec = vecFromDoc(termid, index, corpus1.getCorpusSize());
+            HashMap<Integer, SparseIndexedVector> testvec = vecFromDoc(termid, index2, corpus2.getCorpusSize());
+            int k = Integer.parseInt(args[1]);
+            for (Map.Entry<Integer, SparseIndexedVector> es : testvec.entrySet()) {
+                List<Pair> nn = nearestNeighbors(id2vec, es.getValue());
+                System.out.println(corpus2.getDocument(es.getKey()).getTitle());
+                for (Pair p : nn.subList(0, k)) {
+                    System.out.println(corpus1.getDocument(p.id).getTitle() + " (" + p.score + ")");
+                }
+                System.out.println(findClass(corpus1, nn.subList(0, k)));
             }
         }
-        HashMap<Integer, SparseIndexedVector> id2vec = vecFromDoc(termid,index, corpus1.getCorpusSize());
-        HashMap<Integer, SparseIndexedVector> testvec = vecFromDoc(termid,index2, corpus2.getCorpusSize());
-        int k = 3;
-        for (Map.Entry<Integer,SparseIndexedVector> es:testvec.entrySet()){
-            List<Pair> nn = nearestNeighbors(id2vec, es.getValue());
-            System.out.println(corpus2.getDocument(es.getKey()).getTitle());
-            for (Pair p: nn.subList(0,k)){
-                System.out.println(corpus1.getDocument(p.id).getTitle() +" ("+p.score+")");
-            }
-            System.out.println(findClass(corpus1,nn.subList(0,k)));
-        }
+        System.exit(0);
     }
 
     public static List<Pair> nearestNeighbors(HashMap<Integer, SparseIndexedVector> id2vec,SparseIndexedVector test){
