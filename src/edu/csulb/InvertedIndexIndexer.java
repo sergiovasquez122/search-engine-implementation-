@@ -19,18 +19,11 @@ import java.util.function.Predicate;
 
 public class InvertedIndexIndexer {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+        if (args.length>1){
+            main.main(args);
+        }
         displayIndexOptions();
         int input = userInput("input: ");
-        if (input==3){
-
-            DirectoryCorpus corpus = findCorpus(true);
-            Instant start = Instant.now();
-            Index index = indexCorpus(corpus);
-            Instant end = Instant.now();
-            Duration timeElapsed = Duration.between(start, end);
-            System.out.println("Time taken: "+ timeElapsed.toSeconds() +" seconds");
-            System.exit(0);
-        }
         DirectoryCorpus corpus = findCorpus(false);
         if (input==1){
             Instant start = Instant.now();
