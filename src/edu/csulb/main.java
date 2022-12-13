@@ -41,7 +41,7 @@ public class main {
                 List<Pair> nn = nearestNeighbors(id2vec, es.getValue());
                 System.out.println(corpus2.getDocument(es.getKey()).getTitle());
                 for (Pair p : nn.subList(0, k)) {
-                    System.out.println(corpus1.getDocument(p.id).getTitle() + " (" + p.score + ")");
+                    System.out.println(corpus1.getDocument(p.id).getTitle() + " (" + p.score + ")"+" ("+corpus1.getClass(p.id)+")");
                 }
                 System.out.println(findClass(corpus1, nn.subList(0, k)));
             }
